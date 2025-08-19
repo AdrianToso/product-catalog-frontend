@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Observable, tap, catchError, throwError, of } from 'rxjs';
+import { Observable, tap, catchError, throwError } from 'rxjs';
 
 interface AuthResponse {
   token: string;
@@ -33,7 +33,7 @@ export class AuthService {
             this.userSig.set(decoded.unique_name);
           }
         }),
-        catchError(err => {
+        catchError(_err => {
             this.logout();
             return throwError(() => new Error('Usuario o contraseña incorrectos.'));
         })

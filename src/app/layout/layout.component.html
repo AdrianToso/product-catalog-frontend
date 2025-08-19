@@ -16,7 +16,9 @@
         <a mat-list-item routerLink="/auth/login">Login</a>
       </ng-container>
       <ng-template #loggedIn>
-        <a mat-list-item (click)="onLogout()">Logout</a>
+       <button mat-list-item (click)="onLogout()">
+          Logout
+        </button>
       </ng-template>
     </mat-nav-list>
   </mat-sidenav>

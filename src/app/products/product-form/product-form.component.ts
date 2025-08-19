@@ -6,7 +6,6 @@ import { Category } from '../models/category.model';
 import { CreateProductDto } from '../models/create-product.dto';
 import { UpdateProductDto } from '../models/update-product.dto';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Product } from '../models/product.model';
 
 @Component({
   standalone: false,

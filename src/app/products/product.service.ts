@@ -16,7 +16,7 @@ export class ProductService {
   constructor(private http: HttpClient) { }
 
   getProducts(pageNumber: number, pageSize: number): Observable<PaginatedResult<Product>> {
-    let params = new HttpParams()
+    const params = new HttpParams()
       .set('pageNumber', pageNumber.toString())
       .set('pageSize', pageSize.toString());
 
@@ -44,16 +44,23 @@ export class ProductService {
       .pipe(catchError(this.handleError));
   }
 
-  private handleError(error: any): Observable<never> {
-    console.error('API Error:', error);
-    let errorMessage = 'Ocurrió un error inesperado.';
+  private handleError(error: unknown): Observable<never> {
+  console.error('API Error:', error);
+  let errorMessage = 'Ocurrió un error inesperado.';
+  
+  // Manejo seguro de diferentes tipos de error
+  if (typeof error === 'object' && error !== null) {
+    const err = error as { error?: { title?: string }; message?: string };
     
-    if (error.error?.title) {
-        errorMessage = error.error.title;
-    } else if (error.message) {
-        errorMessage = error.message;
+    if (err.error?.title) {
+      errorMessage = err.error.title;
+    } else if (err.message) {
+      errorMessage = err.message;
     }
-    
-    return throwError(() => new Error(errorMessage));
+  } else if (typeof error === 'string') {
+    errorMessage = error;
   }
+  
+  return throwError(() => new Error(errorMessage));
+}
 }

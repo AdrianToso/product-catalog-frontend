@@ -1,0 +1,59 @@
+// @ts-check
+module.exports = {
+  root: true,
+  overrides: [
+    // Configuración para archivos TypeScript
+    {
+      files: ['**/*.ts'],
+      extends: [
+        'eslint:recommended',
+        'plugin:@typescript-eslint/recommended',
+        'plugin:@typescript-eslint/stylistic',
+        'plugin:@angular-eslint/recommended',
+        'plugin:@angular-eslint/template/process-inline-templates'
+      ],
+      rules: {
+        '@angular-eslint/directive-selector': [
+          'error',
+          {
+            type: 'attribute',
+            prefix: 'app',
+            style: 'camelCase',
+          },
+        ],
+        '@angular-eslint/component-selector': [
+          'error',
+          {
+            type: 'element',
+            prefix: 'app',
+            style: 'kebab-case',
+          },
+        ],
+        '@angular-eslint/prefer-standalone': 'off',
+        '@angular-eslint/prefer-inject': 'off',
+        '@typescript-eslint/no-unused-vars': [
+          'error', 
+          { 
+            argsIgnorePattern: '^_',
+            varsIgnorePattern: '^_',
+            caughtErrorsIgnorePattern: '^_'
+          }
+        ],
+        '@typescript-eslint/no-explicit-any': 'warn',
+        'prefer-const': 'warn'
+      },
+    },
+    // Configuración para archivos HTML/template
+    {
+      files: ['**/*.html'],
+      extends: [
+        'plugin:@angular-eslint/template/recommended',
+        'plugin:@angular-eslint/template/accessibility',
+      ],
+      rules: {
+        '@angular-eslint/template/click-events-have-key-events': 'warn',
+        '@angular-eslint/template/interactive-supports-focus': 'warn',
+      },
+    },
+  ],
+};
