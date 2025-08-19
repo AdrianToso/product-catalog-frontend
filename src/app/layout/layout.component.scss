@@ -1,0 +1,47 @@
+.app-shell {
+  height: 100vh;
+}
+
+.app-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.app-sidenav {
+  width: 260px;
+}
+
+.app-content {
+  padding: 16px;
+}
+
+.app-title {
+  font-weight: 600;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 0.9rem;
+
+  a[mat-button] {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 959.98px) {
+  .user-info > span {
+    display: none;
+  }
+  .app-sidenav {
+    width: 240px;
+  }
+}

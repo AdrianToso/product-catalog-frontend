@@ -1,0 +1,74 @@
+.product-list-container {
+  padding: 1rem;
+}
+
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+
+  h1 {
+    margin: 0;
+  }
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.spinner-container, .error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.error-container {
+  color: #f44336; // Material Warn color
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  }
+
+  img {
+    height: 200px;
+    object-fit: cover;
+  }
+
+  mat-card-header {
+    padding-bottom: 8px;
+  }
+
+  mat-card-content {
+    flex-grow: 1; // Pushes actions to the bottom
+    padding-top: 0;
+    color: rgba(0,0,0,0.7);
+  }
+
+  mat-card-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px 16px !important;
+  }
+}
+
+mat-paginator {
+  margin-top: 2rem;
+  background: transparent;
+}

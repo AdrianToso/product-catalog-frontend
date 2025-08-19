@@ -1,0 +1,45 @@
+<div class="product-list-container">
+  <div class="header-actions">
+    <h1>Catálogo de Productos</h1>
+    <button *ngIf="isAdmin" mat-raised-button color="primary" [routerLink]="['/products/create']">
+      <mat-icon>add</mat-icon>
+      Crear Producto
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="spinner-container">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-container">
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <div *ngIf="!loading && !errorMessage" class="grid-container">
+    <mat-card *ngFor="let product of products" class="product-card">
+      <img mat-card-image [src]="product.imageUrl || 'https://via.placeholder.com/300'" alt="{{ product.name }}">
+      <mat-card-header>
+        <mat-card-title>{{ product.name }}</mat-card-title>
+        <mat-card-subtitle>{{ product.category.name }}</mat-card-subtitle> </mat-card-header>
+      <mat-card-content>
+        <p>{{ product.description }}</p>
+      </mat-card-content>
+      <mat-card-actions *ngIf="isAdmin">
+        <button mat-icon-button color="primary" [routerLink]="['/products/edit', product.id]">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="confirmDelete(product)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <mat-paginator
+    [length]="totalCount"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[5, 10, 25, 100]"
+    (page)="onPageChange($event)"
+    aria-label="Seleccionar página de productos">
+  </mat-paginator>
+</div>
