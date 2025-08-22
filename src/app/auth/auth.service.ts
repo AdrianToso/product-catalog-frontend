@@ -13,7 +13,7 @@ export class AuthService {
   private apiUrl = `${environment.apiUrl}Auth`;
   
   isLoggedInSig = signal<boolean>(this.hasToken());
-  roleSig = signal<string | null>(this.getRole());
+  roleSig = signal<string[] | null>(this.getRoles());
   userSig = signal<string | null>(this.getUsername());
 
   constructor(private http: HttpClient) {}
@@ -26,10 +26,10 @@ export class AuthService {
           const decoded = this.decodeToken(res.token);
           
           if (decoded) {
-            localStorage.setItem('role', decoded.role);
+            localStorage.setItem('roles', JSON.stringify(decoded.roles));
             localStorage.setItem('userName', decoded.unique_name);
             this.isLoggedInSig.set(true);
-            this.roleSig.set(decoded.role);
+            this.roleSig.set(decoded.roles);
             this.userSig.set(decoded.unique_name);
           }
         }),
@@ -42,7 +42,7 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('token');
-    localStorage.removeItem('role');
+    localStorage.removeItem('roles');
     localStorage.removeItem('userName');
     this.isLoggedInSig.set(false);
     this.roleSig.set(null);
@@ -57,8 +57,9 @@ export class AuthService {
     return !!this.getToken();
   }
 
-  getRole(): string | null {
-    return localStorage.getItem('role');
+  getRoles(): string[] | null {
+    const rolesStr = localStorage.getItem('roles');
+    return rolesStr ? JSON.parse(rolesStr) : null;
   }
   
   getUsername(): string | null {
@@ -66,16 +67,28 @@ export class AuthService {
   }
 
   isAdmin(): boolean {
-    return this.getRole() === 'Admin';
+    const roles = this.getRoles();
+    return roles ? roles.includes('Admin') : false;
   }
 
-  private decodeToken(token: string): { role: string; unique_name: string } | null {
+  private decodeToken(token: string): { roles: string[]; unique_name: string } | null {
     try {
       const payload = token.split('.')[1];
       const decodedPayload = atob(payload);
       const parsed = JSON.parse(decodedPayload);
+      
+    
+      let roles: string[] = [];
+      const roleClaim = parsed['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+      
+      if (Array.isArray(roleClaim)) {
+        roles = roleClaim;
+      } else if (typeof roleClaim === 'string') {
+        roles = [roleClaim];
+      }
+      
       return {
-        role: parsed['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'],
+        roles: roles,
         unique_name: parsed['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name']
       };
     } catch (e) {

@@ -14,9 +14,9 @@ export class RoleGuard implements CanActivate {
     _state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
     const expectedRole = route.data['expectedRole'];
-    const userRole = this.authService.getRole(); 
+    const userRoles = this.authService.getRoles(); 
 
-    if (userRole && userRole === expectedRole) {
+    if (userRoles && userRoles.includes(expectedRole)) {
       return true;
     }
 

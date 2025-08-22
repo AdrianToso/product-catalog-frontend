@@ -14,14 +14,12 @@ export class ProductsStateService {
     pageSize: 10,
     totalCount: 0
   });
-
-  // Observables públicos
+  
   products$ = this.productsSubject.asObservable();
   loading$ = this.loadingSubject.asObservable();
   error$ = this.errorSubject.asObservable();
   pagination$ = this.paginationSubject.asObservable();
 
-  // Actualizar estado
   setProducts(products: Product[]): void {
     this.productsSubject.next(products);
   }

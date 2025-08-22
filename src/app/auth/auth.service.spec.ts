@@ -9,8 +9,8 @@ describe('AuthService', () => {
   const apiUrl = `${environment.apiUrl}Auth`;
 
   // Crear un token JWT de prueba con payload decodificable
-  // Payload: { "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name": "admin", "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": "Admin", ... }
-  const fakeJwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImV4cCI6MTczNTY4OTY2MSwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NzE3NSIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjQyMDAifQ.fakeSignature';
+  // Payload: { "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name": "admin", "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": ["Editor", "User", "Admin"], ... }
+  const fakeJwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiRWRpdG9yIiwgIlVzZXIiLCAiQWRtaW4iXSwiZXhwIjoxNzM1Njg5NjYxLCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo3MTc1IiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDIwMCJ9.fakeSignature';
 
   beforeAll(() => {
     // Polyfill para atob en el entorno de prueba de Node.js (Karma)
@@ -56,11 +56,11 @@ describe('AuthService', () => {
       req.flush(mockResponse);
 
       expect(localStorage.getItem('token')).toBe(mockResponse.token);
-      expect(localStorage.getItem('role')).toBe('Admin');
+      expect(localStorage.getItem('roles')).toBe(JSON.stringify(['Editor', 'User', 'Admin']));
       expect(localStorage.getItem('userName')).toBe('admin');
       
       expect(service.isLoggedInSig()).toBe(true);
-      expect(service.roleSig()).toBe('Admin');
+      expect(service.roleSig()).toEqual(['Editor', 'User', 'Admin']);
       expect(service.userSig()).toBe('admin');
     });
 
@@ -86,14 +86,16 @@ describe('AuthService', () => {
   describe('logout', () => {
     it('should clear all authentication data from localStorage and signals', () => {
       localStorage.setItem('token', 'some-token');
-      localStorage.setItem('role', 'Admin');
+      localStorage.setItem('roles', JSON.stringify(['Admin']));
       localStorage.setItem('userName', 'testuser');
       service.isLoggedInSig.set(true);
+      service.roleSig.set(['Admin']);
+      service.userSig.set('testuser');
 
       service.logout();
 
       expect(localStorage.getItem('token')).toBeNull();
-      expect(localStorage.getItem('role')).toBeNull();
+      expect(localStorage.getItem('roles')).toBeNull();
       expect(localStorage.getItem('userName')).toBeNull();
       expect(service.isLoggedInSig()).toBe(false);
       expect(service.roleSig()).toBeNull();
