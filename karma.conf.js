@@ -1,4 +1,8 @@
-// karma.conf.js
+// Karma configuration file
+// https://karma-runner.github.io/1.0/config/configuration-file.html
+
+const path = require('path');
+
 module.exports = function (config) {
   config.set({
     basePath: '',
@@ -11,40 +15,40 @@ module.exports = function (config) {
       require('@angular-devkit/build-angular/plugins/karma')
     ],
     client: {
-      jasmine: {
-        // puedes agregar configuración de jasmine aquí
-      },
-      clearContext: false // deja visible el output de jasmine en el browser
+      jasmine: {},
+      clearContext: false
     },
     jasmineHtmlReporter: {
-      suppressAll: true // elimina las trazas duplicadas
+      suppressAll: true
     },
+
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage'),
-      subdir: '.',
+      dir: path.join(__dirname, './coverage/adr-t.product-catalog.frontend'),
       reporters: [
-        { type: 'html' },
-        { type: 'text-summary' }
-      ]
+        { type: 'html', subdir: 'report-html' },
+        { type: 'text-summary' },
+        { type: 'json', subdir: '.', file: 'coverage-final.json' },
+        { type: 'json-summary', subdir: '.', file: 'coverage-summary.json' }
+      ],
+      check: {
+        global: {
+          statements: 70,
+          branches: 50,
+          functions: 60,
+          lines: 70
+        },
+        emitWarning: false
+      }
     },
-    reporters: ['progress', 'kjhtml'],
+
+    reporters: ['progress', 'kjhtml', 'coverage'],
+
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
     browsers: ['ChromeHeadless'],
-    customLaunchers: {
-      ChromeHeadless: {
-        base: 'Chrome',
-        flags: [
-          '--headless',
-          '--disable-gpu',
-          '--remote-debugging-port=9222',
-          '--no-sandbox'
-        ]
-      }
-    },
-    singleRun: false,
+    singleRun: true,
     restartOnFileChange: true
   });
 };

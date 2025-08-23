@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+cd ADR_T.ProductCatalog.Frontend
+npm run lint
+npm test -- --watch=false --browsers=ChromeHeadless
+node check-coverage.js
