@@ -17,6 +17,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+
+
 
 const MATERIAL = [
   MatToolbarModule,
@@ -34,6 +38,8 @@ const MATERIAL = [
   MatMenuModule,
   MatSnackBarModule,
   MatTooltipModule,
+   MatSelectModule,
+  MatOptionModule
 ];
 
 @NgModule({

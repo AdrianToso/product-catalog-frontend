@@ -1,0 +1,39 @@
+.product-form {
+  min-width: 400px;
+  padding: 16px 0;
+
+  .full-width {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  .error-message {
+    color: #f44336;
+    margin-bottom: 16px;
+    text-align: center;
+    font-size: 14px;
+  }
+
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+  }
+}
+
+.mat-dialog-content {
+  max-height: 65vh;
+  overflow: auto;
+}
+
+.mat-dialog-actions {
+  padding: 16px 0;
+  margin-bottom: 0;
+}

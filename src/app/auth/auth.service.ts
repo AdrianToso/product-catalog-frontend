@@ -12,7 +12,7 @@ interface AuthResponse {
 export class AuthService {
   private apiUrl = `${environment.apiUrl}Auth`;
   
-  isLoggedInSig = signal<boolean>(this.hasToken());
+  isLoggedInSig = signal<boolean>(this.hasValidToken());
   roleSig = signal<string[] | null>(this.getRoles());
   userSig = signal<string | null>(this.getUsername());
 
@@ -57,6 +57,10 @@ export class AuthService {
     return !!this.getToken();
   }
 
+  hasValidToken(): boolean {
+    return this.hasToken() && !this.isTokenExpired();
+  }
+
   getRoles(): string[] | null {
     const rolesStr = localStorage.getItem('roles');
     return rolesStr ? JSON.parse(rolesStr) : null;
@@ -71,13 +75,46 @@ export class AuthService {
     return roles ? roles.includes('Admin') : false;
   }
 
+  hasAnyRole(roles: string[]): boolean {
+    const userRoles = this.roleSig();
+    return userRoles ? roles.some(role => userRoles.includes(role)) : false;
+  }
+
+  isTokenExpired(): boolean {
+    const token = this.getToken();
+    if (!token) return true;
+    
+    try {
+      const payload = token.split('.')[1];
+      const decodedPayload = atob(payload);
+      const parsed = JSON.parse(decodedPayload);
+      
+      // Verificar si el token tiene fecha de expiración
+      if (parsed.exp) {
+        const expiration = parsed.exp * 1000; // Convertir a milisegundos
+        return Date.now() >= expiration;
+      }
+      
+      // Si no tiene exp, verificar si tiene expiresAt
+      if (parsed.expiresAt) {
+        const expiration = new Date(parsed.expiresAt).getTime();
+        return Date.now() >= expiration;
+      }
+      
+      // Si no tiene información de expiración, asumimos que está expirado
+      return true;
+    } catch (e) {
+      console.error('Error verificando expiración del token', e);
+      return true;
+    }
+  }
+
   private decodeToken(token: string): { roles: string[]; unique_name: string } | null {
     try {
       const payload = token.split('.')[1];
       const decodedPayload = atob(payload);
       const parsed = JSON.parse(decodedPayload);
       
-    
       let roles: string[] = [];
       const roleClaim = parsed['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
       

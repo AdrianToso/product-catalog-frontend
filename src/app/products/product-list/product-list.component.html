@@ -1,7 +1,7 @@
 <div class="product-list-container">
   <div class="header-actions">
     <h1>Catálogo de Productos</h1>
-    <button *ngIf="isAdmin" mat-raised-button color="primary" [routerLink]="['/products/create']">
+    <button *ngIf="canEdit" mat-raised-button color="primary" (click)="openCreateDialog()">
       <mat-icon>add</mat-icon>
       Crear Producto
     </button>
@@ -20,17 +20,29 @@
       <img mat-card-image [src]="product.imageUrl || 'https://via.placeholder.com/300'" alt="{{ product.name }}">
       <mat-card-header>
         <mat-card-title>{{ product.name }}</mat-card-title>
-        <mat-card-subtitle>{{ product.category.name }}</mat-card-subtitle> </mat-card-header>
+        <mat-card-subtitle>{{ product.category.name }}</mat-card-subtitle>
+      </mat-card-header>
       <mat-card-content>
         <p>{{ product.description }}</p>
       </mat-card-content>
-      <mat-card-actions *ngIf="isAdmin">
-        <button mat-icon-button color="primary" [routerLink]="['/products/edit', product.id]">
-          <mat-icon>edit</mat-icon>
-        </button>
-        <button mat-icon-button color="warn" (click)="confirmDelete(product)">
-          <mat-icon>delete</mat-icon>
-        </button>
+      <mat-card-actions>
+        <!-- Botones de edición/eliminación para Admin y Editor -->
+        <div *ngIf="canEdit" class="edit-actions">
+          <button mat-icon-button color="primary" (click)="openEditDialog(product)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="confirmDelete(product)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+        
+        <!-- Botón de compra para usuarios no editores -->
+        <div *ngIf="!canEdit" class="purchase-action">
+          <button mat-raised-button color="primary" (click)="onPurchase(product)">
+            <mat-icon>shopping_cart</mat-icon>
+            Comprar
+          </button>
+        </div>
       </mat-card-actions>
     </mat-card>
   </div>

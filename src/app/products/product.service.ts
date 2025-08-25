@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, catchError, throwError, tap } from 'rxjs';
 import { Product } from './models/product.model';
 import { PaginatedResult } from './models/paginated-result.model';
 import { environment } from '../../environments/environment';
@@ -15,14 +15,17 @@ export class ProductService {
 
   constructor(private http: HttpClient) { }
 
-  getProducts(pageNumber: number, pageSize: number): Observable<PaginatedResult<Product>> {
-    const params = new HttpParams()
-      .set('pageNumber', pageNumber.toString())
-      .set('pageSize', pageSize.toString());
+getProducts(pageNumber: number, pageSize: number): Observable<PaginatedResult<Product>> {
+  const params = new HttpParams()
+    .set('pageNumber', pageNumber.toString())
+    .set('pageSize', pageSize.toString());
 
-    return this.http.get<PaginatedResult<Product>>(this.apiUrl, { params })
-      .pipe(catchError(this.handleError));
-  }
+  return this.http.get<PaginatedResult<Product>>(this.apiUrl, { params })
+    .pipe(
+      tap(response => console.log('Respuesta del backend:', response)),
+      catchError(this.handleError)
+    );
+}
 
   createProduct(product: CreateProductDto): Observable<string> {
     return this.http.post<string>(this.apiUrl, product)
