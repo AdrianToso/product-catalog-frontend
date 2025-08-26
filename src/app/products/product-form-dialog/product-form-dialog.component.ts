@@ -5,6 +5,8 @@ import { ProductService } from '../product.service';
 import { CategoryService } from '../services/category.service';
 import { Category } from '../models/category.model';
 import { Product } from '../models/product.model';
+import { CreateProductDto } from '../models/create-product.dto';
+import { UpdateProductDto } from '../models/update-product.dto';
 
 export interface ProductFormDialogData {
   product?: Product; 
@@ -22,6 +24,8 @@ export class ProductFormDialogComponent implements OnInit {
   loading = false;
   errorMessage = '';
   isEditMode = false;
+  selectedFile: File | null = null;
+  imagePreview: string | ArrayBuffer | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -54,6 +58,10 @@ export class ProductFormDialogComponent implements OnInit {
       imageUrl: this.data.product!.imageUrl,
       categoryId: this.data.product!.category.id
     });
+
+    if (this.data.product!.imageUrl) {
+      this.imagePreview = this.data.product!.imageUrl;
+    }
   }
 
   loadCategories(): void {
@@ -66,21 +74,116 @@ export class ProductFormDialogComponent implements OnInit {
     });
   }
 
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      
+      if (!file.type.match('image.*')) {
+        this.errorMessage = 'Solo se permiten archivos de imagen.';
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        this.errorMessage = 'La imagen no puede superar los 5MB.';
+        return;
+      }
+
+      this.selectedFile = file;
+      this.errorMessage = '';
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeImage(): void {
+    this.selectedFile = null;
+    this.imagePreview = null;
+    this.productForm.patchValue({ imageUrl: '' });
+  }
+
   onSubmit(): void {
     if (this.productForm.invalid) return;
 
     this.loading = true;
     this.errorMessage = '';
 
-    if (this.isEditMode) {
-      this.updateProduct();
+    const formValue = this.productForm.value;
+
+    if (this.selectedFile) {
+      this.createOrUpdateWithImage(formValue);
+    } else if (this.isEditMode) {
+      this.updateProduct(formValue);
     } else {
-      this.createProduct();
+      this.createProduct(formValue);
     }
   }
 
-  createProduct(): void {
-    this.productService.createProduct(this.productForm.value).subscribe({
+  private createOrUpdateWithImage(formValue: CreateProductDto): void {
+    const productData: CreateProductDto = {
+      name: formValue.name,
+      description: formValue.description,
+      categoryId: formValue.categoryId,
+      imageUrl: formValue.imageUrl
+    };
+
+    if (this.isEditMode) {
+      this.updateProductAndImage(productData);
+    } else {
+      this.productService.createProductWithImage(productData, this.selectedFile!).subscribe({
+        next: () => {
+          this.dialogRef.close(true);
+        },
+        error: (err) => {
+          console.error('Error al crear el producto con imagen', err);
+          this.errorMessage = 'Error al crear el producto: ' + err.message;
+          this.loading = false;
+        }
+      });
+    }
+  }
+
+  private updateProductAndImage(productData: CreateProductDto): void {
+    const updateData: UpdateProductDto = {
+      id: this.data.product!.id,
+      name: productData.name,
+      description: productData.description,
+      categoryId: productData.categoryId,
+      imageUrl: productData.imageUrl
+    };
+
+    this.productService.updateProduct(this.data.product!.id, updateData).subscribe({
+      next: () => {
+        if (this.selectedFile) {
+          this.productService.updateProductImage(this.data.product!.id, this.selectedFile).subscribe({
+            next: () => {
+              this.dialogRef.close(true);
+            },
+            error: (err) => {
+              console.error('Error al actualizar la imagen', err);
+              this.errorMessage = 'Error al actualizar la imagen: ' + err.message;
+              this.loading = false;
+            }
+          });
+        } else {
+          this.dialogRef.close(true);
+        }
+      },
+      error: (err) => {
+        console.error('Error al actualizar el producto', err);
+        this.errorMessage = 'Error al actualizar el producto: ' + err.message;
+        this.loading = false;
+      }
+    });
+  }
+
+  private createProduct(formValue: CreateProductDto): void {
+    const productData: CreateProductDto = formValue;
+    this.productService.createProduct(productData).subscribe({
       next: () => {
         this.dialogRef.close(true);
       },
@@ -92,9 +195,9 @@ export class ProductFormDialogComponent implements OnInit {
     });
   }
 
-  updateProduct(): void {
-    const productData = {
-      ...this.productForm.value,
+  private updateProduct(formValue: UpdateProductDto): void {
+    const productData: UpdateProductDto = {
+      ...formValue,
       id: this.data.product!.id
     };
     

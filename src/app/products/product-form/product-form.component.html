@@ -1,9 +1,6 @@
 <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form">
   <h2>{{ isEditMode ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
-  <div class="form-header">
-    <mat-icon class="form-icon" svgIcon="product"></mat-icon>
-    <span>{{ isEditMode ? 'Editando Producto' : 'Nuevo Producto' }}</span>
-  </div>
+  
   <div *ngIf="errorMessage" class="error-message">
     {{ errorMessage }}
   </div>
@@ -24,10 +21,10 @@
   </mat-form-field>
 
   <mat-form-field appearance="outline">
-    <mat-label>Descripcion</mat-label>
+    <mat-label>Descripción</mat-label>
     <textarea matInput formControlName="description" rows="3" required></textarea>
     <mat-error *ngIf="productForm.get('description')?.hasError('required')">
-      Una descripcion es requerida
+      Una descripción es requerida
     </mat-error>
     <mat-error *ngIf="productForm.get('description')?.hasError('maxlength')">
       Máximo 500 caracteres
@@ -35,21 +32,52 @@
   </mat-form-field>
 
   <mat-form-field appearance="outline">
-    <mat-label>Categoria</mat-label>
+    <mat-label>Categoría</mat-label>
     <mat-select formControlName="categoryId" required>
       <mat-option *ngFor="let category of categories" [value]="category.id">
         {{ category.name }}
       </mat-option>
     </mat-select>
     <mat-error *ngIf="productForm.get('categoryId')?.hasError('required')">
-      Categoria es requerida
+      Categoría es requerida
     </mat-error>
   </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Image URL (Opcional)</mat-label>
-    <input matInput formControlName="imageUrl">
-  </mat-form-field>
+  <!-- Sección de imagen -->
+  <div class="image-section">
+    <h3>Imagen del Producto</h3>
+    
+    <!-- Previsualización de imagen -->
+    <div *ngIf="imagePreview" class="image-preview">
+      <img [src]="imagePreview" alt="Vista previa de la imagen">
+      <button type="button" mat-icon-button color="warn" (click)="removeImage()" class="remove-image-btn">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+
+    <!-- Input para subir archivo -->
+    <div class="file-upload">
+      <input type="file" accept="image/*" (change)="onFileSelected($event)" #fileInput style="display: none;">
+      <button type="button" mat-stroked-button (click)="fileInput.click()">
+        <mat-icon>upload</mat-icon>
+        Seleccionar Imagen
+      </button>
+      <span class="file-info" *ngIf="selectedFile">
+        {{ selectedFile.name }} ({{ selectedFile.size | bytes }})
+      </span>
+    </div>
+
+    <!-- O separador para URL -->
+    <div class="or-separator">
+      <span>O</span>
+    </div>
+
+    <!-- Campo para URL de imagen -->
+    <mat-form-field appearance="outline">
+      <mat-label>URL de Imagen (Opcional)</mat-label>
+      <input matInput formControlName="imageUrl">
+    </mat-form-field>
+  </div>
 
   <div class="form-actions">
     <button 

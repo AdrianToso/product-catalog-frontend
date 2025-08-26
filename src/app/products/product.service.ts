@@ -15,20 +15,35 @@ export class ProductService {
 
   constructor(private http: HttpClient) { }
 
-getProducts(pageNumber: number, pageSize: number): Observable<PaginatedResult<Product>> {
-  const params = new HttpParams()
-    .set('pageNumber', pageNumber.toString())
-    .set('pageSize', pageSize.toString());
+  getProducts(pageNumber: number, pageSize: number): Observable<PaginatedResult<Product>> {
+    const params = new HttpParams()
+      .set('pageNumber', pageNumber.toString())
+      .set('pageSize', pageSize.toString());
 
-  return this.http.get<PaginatedResult<Product>>(this.apiUrl, { params })
-    .pipe(
-      tap(response => console.log('Respuesta del backend:', response)),
-      catchError(this.handleError)
-    );
-}
+    return this.http.get<PaginatedResult<Product>>(this.apiUrl, { params })
+      .pipe(
+        tap(response => console.log('Respuesta del backend:', response)),
+        catchError(this.handleError)
+      );
+  }
 
   createProduct(product: CreateProductDto): Observable<string> {
     return this.http.post<string>(this.apiUrl, product)
+      .pipe(catchError(this.handleError));
+  }
+
+  // Nuevo método para crear producto con imagen
+  createProductWithImage(productData: CreateProductDto, imageFile: File): Observable<string> {
+    const formData = new FormData();
+    formData.append('Name', productData.name);
+    formData.append('Description', productData.description);
+    formData.append('CategoryId', productData.categoryId);
+    
+    if (imageFile) {
+      formData.append('ImageFile', imageFile);
+    }
+
+    return this.http.post<string>(`${this.apiUrl}/with-image`, formData)
       .pipe(catchError(this.handleError));
   }
 
@@ -42,28 +57,36 @@ getProducts(pageNumber: number, pageSize: number): Observable<PaginatedResult<Pr
       .pipe(catchError(this.handleError));
   }
 
+  // Nuevo método para actualizar imagen de producto existente
+  updateProductImage(id: string, imageFile: File): Observable<void> {
+    const formData = new FormData();
+    formData.append('file', imageFile);
+
+    return this.http.post<void>(`${this.apiUrl}/${id}/image`, formData)
+      .pipe(catchError(this.handleError));
+  }
+
   deleteProduct(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`)
       .pipe(catchError(this.handleError));
   }
 
   private handleError(error: unknown): Observable<never> {
-  console.error('API Error:', error);
-  let errorMessage = 'Ocurrió un error inesperado.';
-  
-  // Manejo seguro de diferentes tipos de error
-  if (typeof error === 'object' && error !== null) {
-    const err = error as { error?: { title?: string }; message?: string };
+    console.error('API Error:', error);
+    let errorMessage = 'Ocurrió un error inesperado.';
     
-    if (err.error?.title) {
-      errorMessage = err.error.title;
-    } else if (err.message) {
-      errorMessage = err.message;
+    if (typeof error === 'object' && error !== null) {
+      const err = error as { error?: { title?: string }; message?: string };
+      
+      if (err.error?.title) {
+        errorMessage = err.error.title;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+    } else if (typeof error === 'string') {
+      errorMessage = error;
     }
-  } else if (typeof error === 'string') {
-    errorMessage = error;
+    
+    return throwError(() => new Error(errorMessage));
   }
-  
-  return throwError(() => new Error(errorMessage));
-}
 }

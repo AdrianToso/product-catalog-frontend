@@ -20,6 +20,8 @@ export class ProductFormComponent implements OnInit {
   errorMessage = '';
   isEditMode = false;
   productId: string | null = null;
+  selectedFile: File | null = null;
+  imagePreview: string | ArrayBuffer | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -58,6 +60,10 @@ export class ProductFormComponent implements OnInit {
           imageUrl: product.imageUrl,
           categoryId: product.category.id
         });
+
+        if (product.imageUrl) {
+          this.imagePreview = product.imageUrl;
+        }
         this.loading = false;
       },
       error: (err) => {
@@ -78,41 +84,142 @@ export class ProductFormComponent implements OnInit {
     });
   }
 
+onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+        const file = input.files[0];
+        if (!file.type.match('image.*')) {
+            this.errorMessage = 'Solo se permiten archivos de imagen.';
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            this.errorMessage = 'La imagen no puede superar los 5MB.';
+            return;
+        }
+
+        this.selectedFile = file;
+        this.errorMessage = '';
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            this.imagePreview = reader.result;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+  removeImage(): void {
+    this.selectedFile = null;
+    this.imagePreview = null;
+    this.productForm.patchValue({ imageUrl: '' });
+  }
+
   onSubmit(): void {
     if (this.productForm.invalid) return;
 
     this.loading = true;
     this.errorMessage = '';
 
-    if (this.isEditMode && this.productId) {
-      const productData: UpdateProductDto = {
-        ...this.productForm.value,
-        id: this.productId
-      };
-      
-      this.productService.updateProduct(this.productId, productData).subscribe({
-        next: () => {
-          this.router.navigate(['/products']);
-        },
-        error: (err) => {
-          console.error('Error al actualizar el producto', err);
-          this.errorMessage = 'Error al actualizar el producto: ' + err.message;
-          this.loading = false;
-        }
-      });
+    const formValue = this.productForm.value;
+
+    if (this.selectedFile) {
+      this.createOrUpdateWithImage(formValue);
+    } else if (this.isEditMode) {
+      this.updateProduct(formValue);
     } else {
-      const productData: CreateProductDto = this.productForm.value;
-      this.productService.createProduct(productData).subscribe({
+      this.createProduct(formValue);
+    }
+  }
+
+  private createOrUpdateWithImage(formValue: CreateProductDto): void {
+    const productData: CreateProductDto = {
+      name: formValue.name,
+      description: formValue.description,
+      categoryId: formValue.categoryId,
+      imageUrl: formValue.imageUrl
+    };
+
+    if (this.isEditMode) {
+      this.updateProductAndImage(productData);
+    } else {
+      this.productService.createProductWithImage(productData, this.selectedFile!).subscribe({
         next: () => {
           this.router.navigate(['/products']);
         },
         error: (err) => {
-          console.error('Error al crear el producto', err);
+          console.error('Error al crear el producto con imagen', err);
           this.errorMessage = 'Error al crear el producto: ' + err.message;
           this.loading = false;
         }
       });
     }
+  }
+
+  private updateProductAndImage(productData: CreateProductDto): void {
+    const updateData: UpdateProductDto = {
+      id: this.productId!,
+      name: productData.name,
+      description: productData.description,
+      categoryId: productData.categoryId,
+      imageUrl: productData.imageUrl
+    };
+
+    this.productService.updateProduct(this.productId!, updateData).subscribe({
+      next: () => {
+        if (this.selectedFile) {
+          this.productService.updateProductImage(this.productId!, this.selectedFile).subscribe({
+            next: () => {
+              this.router.navigate(['/products']);
+            },
+            error: (err) => {
+              console.error('Error al actualizar la imagen', err);
+              this.errorMessage = 'Error al actualizar la imagen: ' + err.message;
+              this.loading = false;
+            }
+          });
+        } else {
+          this.router.navigate(['/products']);
+        }
+      },
+      error: (err) => {
+        console.error('Error al actualizar el producto', err);
+        this.errorMessage = 'Error al actualizar el producto: ' + err.message;
+        this.loading = false;
+      }
+    });
+  }
+
+  private createProduct(formValue: CreateProductDto): void {
+    const productData: CreateProductDto = formValue;
+    this.productService.createProduct(productData).subscribe({
+      next: () => {
+        this.router.navigate(['/products']);
+      },
+      error: (err) => {
+        console.error('Error al crear el producto', err);
+        this.errorMessage = 'Error al crear el producto: ' + err.message;
+        this.loading = false;
+      }
+    });
+  }
+
+  private updateProduct(formValue: UpdateProductDto): void {
+    const productData: UpdateProductDto = {
+      ...formValue,
+      id: this.productId!
+    };
+    
+    this.productService.updateProduct(this.productId!, productData).subscribe({
+      next: () => {
+        this.router.navigate(['/products']);
+      },
+      error: (err) => {
+        console.error('Error al actualizar el producto', err);
+        this.errorMessage = 'Error al actualizar el producto: ' + err.message;
+        this.loading = false;
+      }
+    });
   }
 
   onCancel(): void {

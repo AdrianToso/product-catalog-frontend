@@ -19,8 +19,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
-
-
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 const MATERIAL = [
   MatToolbarModule,
@@ -38,8 +37,9 @@ const MATERIAL = [
   MatMenuModule,
   MatSnackBarModule,
   MatTooltipModule,
-   MatSelectModule,
-  MatOptionModule
+  MatSelectModule,
+  MatOptionModule,
+  MatProgressBarModule
 ];
 
 @NgModule({
