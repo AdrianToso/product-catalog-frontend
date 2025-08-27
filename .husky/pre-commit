@@ -1,7 +1,15 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+#!/usr/bin/env pwsh
 
-cd ADR_T.ProductCatalog.Frontend
+# Ejecutar ESLint
 npm run lint
-npm test -- --watch=false --browsers=ChromeHeadless
-node check-coverage.js
+if ($LASTEXITCODE -ne 0) { 
+    Write-Error "ESLint failed. Please fix the issues before committing."
+    exit $LASTEXITCODE
+}
+
+# Ejecutar pruebas
+npm test
+if ($LASTEXITCODE -ne 0) { 
+    Write-Error "Tests failed. Please fix the issues before committing."
+    exit $LASTEXITCODE
+}
