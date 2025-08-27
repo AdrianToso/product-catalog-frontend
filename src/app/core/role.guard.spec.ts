@@ -1,53 +1,68 @@
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Router } from '@angular/router';
-import { RoleGuard } from './role.guard';
 import { AuthService } from '../auth/auth.service';
+import { RoleGuard } from './role.guard';
 
 describe('RoleGuard', () => {
   let guard: RoleGuard;
-  let authService: jasmine.SpyObj<AuthService>;
-  let router: jasmine.SpyObj<Router>;
+  let authService: any;
+  let router: any;
 
   beforeEach(() => {
-    const authServiceSpy = jasmine.createSpyObj('AuthService', ['getRoles']);
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    authService = {
+      getRoles: jest.fn()
+    };
+
+    router = {
+      navigate: jest.fn()
+    };
 
     TestBed.configureTestingModule({
       providers: [
         RoleGuard,
-        { provide: AuthService, useValue: authServiceSpy },
-        { provide: Router, useValue: routerSpy }
+        { provide: AuthService, useValue: authService },
+        { provide: Router, useValue: router }
       ]
     });
 
     guard = TestBed.inject(RoleGuard);
-    authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
   });
 
   it('should allow access for Admin role', () => {
-    authService.getRoles.and.returnValue(['Admin']);
-    const route = { data: { expectedRoles: ['Admin', 'Editor'] } } as unknown as ActivatedRouteSnapshot;
-    const state = {} as RouterStateSnapshot;
-
-    expect(guard.canActivate(route, state)).toBeTrue();
+    const mockRoute = {
+      data: {
+        expectedRoles: ['Admin']
+      }
+    };
+    
+    authService.getRoles.mockReturnValue(['Admin']);
+    const result = guard.canActivate(mockRoute as any, null as any);
+    expect(result).toBe(true);
   });
 
   it('should allow access for Editor role', () => {
-    authService.getRoles.and.returnValue(['Editor']);
-    const route = { data: { expectedRoles: ['Admin', 'Editor'] } } as unknown as ActivatedRouteSnapshot;
-    const state = {} as RouterStateSnapshot;
-
-    expect(guard.canActivate(route, state)).toBeTrue();
+    const mockRoute = {
+      data: {
+        expectedRoles: ['Editor']
+      }
+    };
+    
+    authService.getRoles.mockReturnValue(['Editor']);
+    const result = guard.canActivate(mockRoute as any, null as any);
+    expect(result).toBe(true);
   });
 
   it('should deny access for User role', () => {
-    authService.getRoles.and.returnValue(['User']);
-    const route = { data: { expectedRoles: ['Admin', 'Editor'] } } as unknown as ActivatedRouteSnapshot;
-    const state = {} as RouterStateSnapshot;
-
-    expect(guard.canActivate(route, state)).toBeFalse();
+    const mockRoute = {
+      data: {
+        expectedRoles: ['Admin', 'Editor']
+      }
+    };
+    
+    authService.getRoles.mockReturnValue(['User']);
+    const result = guard.canActivate(mockRoute as any, null as any);
+    expect(result).toBe(false);
+    // Cambiar '/unauthorized' por '/home' para que coincida con la implementación real
     expect(router.navigate).toHaveBeenCalledWith(['/home']);
   });
 });

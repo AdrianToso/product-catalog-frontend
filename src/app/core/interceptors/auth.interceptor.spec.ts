@@ -11,7 +11,7 @@ class MockAuthService {
 }
 
 class MockRouter {
-  navigate = jasmine.createSpy('navigate');
+  navigate = jest.fn(); // Cambiado de jasmine.createSpy a jest.fn
 }
 
 describe('AuthInterceptor', () => {

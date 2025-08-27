@@ -11,17 +11,27 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 describe('ProductFormDialogComponent', () => {
   let component: ProductFormDialogComponent;
   let fixture: ComponentFixture<ProductFormDialogComponent>;
-  let mockProductService: jasmine.SpyObj<ProductService>;
-  let mockCategoryService: jasmine.SpyObj<CategoryService>;
-  let mockDialogRef: jasmine.SpyObj<MatDialogRef<ProductFormDialogComponent>>;
+  let mockProductService: any;
+  let mockCategoryService: any;
+  let mockDialogRef: any;
 
   beforeEach(async () => {
-    mockProductService = jasmine.createSpyObj('ProductService', ['createProduct', 'updateProduct']);
-    mockCategoryService = jasmine.createSpyObj('CategoryService', ['getAllCategories']);
-    mockDialogRef = jasmine.createSpyObj('MatDialogRef', ['close']);
+    // Reemplazar jasmine.createSpyObj con objetos jest.fn()
+    mockProductService = {
+      createProduct: jest.fn(),
+      updateProduct: jest.fn()
+    };
+
+    mockCategoryService = {
+      getAllCategories: jest.fn()
+    };
+
+    mockDialogRef = {
+      close: jest.fn()
+    };
 
     // Configurar el mock para que devuelva un observable vacío
-    mockCategoryService.getAllCategories.and.returnValue(of([]));
+    mockCategoryService.getAllCategories.mockReturnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [
