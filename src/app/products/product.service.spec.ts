@@ -41,7 +41,7 @@ describe('ProductService', () => {
 
     const req = httpMock.expectOne(`${apiUrl}/with-image`);
     expect(req.request.method).toBe('POST');
-    expect(req.request.body instanceof FormData).toBeTrue();
+    expect(req.request.body instanceof FormData).toBe(true);
     req.flush(mockResponse);
   });
 
@@ -53,7 +53,7 @@ describe('ProductService', () => {
 
     const req = httpMock.expectOne(`${apiUrl}/${productId}/image`);
     expect(req.request.method).toBe('POST');
-    expect(req.request.body instanceof FormData).toBeTrue();
+    expect(req.request.body instanceof FormData).toBe(true);
     req.flush(null);
   });
 });

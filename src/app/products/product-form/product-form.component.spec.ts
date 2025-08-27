@@ -12,8 +12,8 @@ import { Category } from '../models/category.model';
 describe('ProductFormComponent', () => {
   let component: ProductFormComponent;
   let fixture: ComponentFixture<ProductFormComponent>;
-  let mockProductService: jasmine.SpyObj<ProductService>;
-  let mockCategoryService: jasmine.SpyObj<CategoryService>;
+  let mockProductService: any;
+  let mockCategoryService: any;
 
   const mockCategory: Category = {
     id: '1',
@@ -22,15 +22,18 @@ describe('ProductFormComponent', () => {
   };
 
   beforeEach(async () => {
-    mockProductService = jasmine.createSpyObj('ProductService', [
-      'getProductById', 
-      'createProduct', 
-      'updateProduct',
-      'createProductWithImage',
-      'updateProductImage'
-    ]);
+    // Reemplazar jasmine.createSpyObj con objetos jest.fn()
+    mockProductService = {
+      getProductById: jest.fn(),
+      createProduct: jest.fn(),
+      updateProduct: jest.fn(),
+      createProductWithImage: jest.fn(),
+      updateProductImage: jest.fn()
+    };
 
-    mockCategoryService = jasmine.createSpyObj('CategoryService', ['getAllCategories']);
+    mockCategoryService = {
+      getAllCategories: jest.fn()
+    };
 
     await TestBed.configureTestingModule({
       declarations: [ProductFormComponent],
@@ -54,7 +57,8 @@ describe('ProductFormComponent', () => {
   });
 
   it('should load categories on init', () => {
-    mockCategoryService.getAllCategories.and.returnValue(of([mockCategory]));
+    // Cambiar and.returnValue por mockReturnValue
+    mockCategoryService.getAllCategories.mockReturnValue(of([mockCategory]));
     fixture.detectChanges();
     
     expect(mockCategoryService.getAllCategories).toHaveBeenCalled();
@@ -73,7 +77,7 @@ describe('ProductFormComponent', () => {
     
     expect(component.selectedFile).toBe(file);
     expect(component.errorMessage).toBe('');
-});
+  });
 
   it('should show error for non-image file', () => {
     const file = new File([''], 'test.txt', { type: 'text/plain' });
