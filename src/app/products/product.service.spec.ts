@@ -42,6 +42,14 @@ describe('ProductService', () => {
     const req = httpMock.expectOne(`${apiUrl}/with-image`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body instanceof FormData).toBe(true);
+
+    // opcional: validar que los campos de FormData estén presentes
+    const formData = req.request.body as FormData;
+    expect(formData.get('Name')).toBe(productData.name);
+    expect(formData.get('Description')).toBe(productData.description);
+    expect(formData.get('CategoryId')).toBe(productData.categoryId);
+    expect(formData.get('ImageFile')).toBe(imageFile);
+
     req.flush(mockResponse);
   });
 
@@ -55,5 +63,53 @@ describe('ProductService', () => {
     expect(req.request.method).toBe('POST');
     expect(req.request.body instanceof FormData).toBe(true);
     req.flush(null);
+  });
+
+  it('should handle error responses', () => {
+    const productId = 'non-existent';
+
+    service.getProductById(productId).subscribe({
+      next: () => fail('should have failed'),
+      error: (err) => {
+        expect(err).toBeTruthy();
+        expect(err.message).toBe('Not Found');
+      }
+    });
+
+    const req = httpMock.expectOne(`${apiUrl}/${productId}`);
+    req.flush({ title: 'Not Found' }, { status: 404, statusText: 'Not Found' });
+  });
+
+  it('should get products with pagination', () => {
+    const mockPaginated = {
+      items: [],
+      totalCount: 0
+    };
+
+    service.getProducts(1, 10).subscribe(response => {
+      expect(response).toEqual(mockPaginated);
+    });
+
+    const req = httpMock.expectOne(`${apiUrl}?pageNumber=1&pageSize=10`);
+    expect(req.request.method).toBe('GET');
+    req.flush(mockPaginated);
+  });
+
+  it('should create product without image', () => {
+    const mockResponse = 'product-id-456';
+    const productData: CreateProductDto = {
+      name: 'No Image Product',
+      description: 'Description',
+      categoryId: 'cat-456'
+    };
+
+    service.createProduct(productData).subscribe(response => {
+      expect(response).toBe(mockResponse);
+    });
+
+    const req = httpMock.expectOne(apiUrl);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(productData);
+    req.flush(mockResponse);
   });
 });
