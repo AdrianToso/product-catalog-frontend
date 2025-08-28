@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HTTP_INTERCEPTORS, HttpClient, HttpRequest, HttpResponse } from '@angular/common/http';
-import { of } from 'rxjs';
+import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 
 import { LoadingInterceptor } from './loading.interceptor';
 import { LoadingService } from '../services/loading.service';

@@ -6,10 +6,12 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "test:ci": "jest --ci --runInBand"
+    "test": "jest --config jest.config.cjs",
+    "test:watch": "jest --config jest.config.cjs --watch",
+    "test:coverage": "jest --config jest.config.cjs --coverage",
+    "test:ci": "jest --config jest.config.cjs --ci --runInBand",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "private": true,
   "dependencies": {
@@ -29,11 +31,16 @@
   },
   "devDependencies": {
     "@angular-builders/jest": "^20.0.0",
+    "@angular-eslint/eslint-plugin": "^20.2.0",
+    "@angular-eslint/eslint-plugin-template": "^20.2.0",
+    "@angular-eslint/template-parser": "^20.2.0",
     "@angular/build": "^20.2.1",
     "@angular/cli": "^20.2.1",
     "@angular/compiler-cli": "^20.2.2",
     "@types/jasmine": "~5.1.0",
     "@types/jest": "^30.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
     "eslint": "^9.29.0",
     "husky": "^9.1.7",
     "jasmine-core": "~5.4.0",
@@ -48,5 +55,6 @@
     "open-cli": "^8.0.0",
     "sass": "^1.90.0",
     "typescript": "~5.9.2"
-  }
+  },
+  "type": "module"
 }
