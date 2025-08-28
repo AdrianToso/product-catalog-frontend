@@ -6,5 +6,5 @@ export const environment = {
   // Variables adicionales para seguridad y monitoreo
   tokenWhitelistedDomains: ['yourproductionapi.com'],
   tokenBlacklistedRoutes: ['/api/auth'],
-  enableDebug: false
+  enableDebug: false,
 };

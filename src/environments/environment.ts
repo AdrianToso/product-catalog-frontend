@@ -6,5 +6,5 @@ export const environment = {
   // Variables adicionales para seguridad y monitoreo
   tokenWhitelistedDomains: ['localhost:7175'],
   tokenBlacklistedRoutes: ['/api/auth'],
-  enableDebug: true
+  enableDebug: true,
 };

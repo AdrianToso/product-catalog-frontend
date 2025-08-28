@@ -9,14 +9,14 @@ import { CreateProductDto } from '../models/create-product.dto';
 import { UpdateProductDto } from '../models/update-product.dto';
 
 export interface ProductFormDialogData {
-  product?: Product; 
+  product?: Product;
 }
 
 @Component({
   standalone: false,
   selector: 'app-product-form-dialog',
   templateUrl: './product-form-dialog.component.html',
-  styleUrls: ['./product-form-dialog.component.scss']
+  styleUrls: ['./product-form-dialog.component.scss'],
 })
 export class ProductFormDialogComponent implements OnInit {
   productForm: FormGroup;
@@ -38,7 +38,7 @@ export class ProductFormDialogComponent implements OnInit {
       name: ['', [Validators.required, Validators.maxLength(200)]],
       description: ['', [Validators.required, Validators.maxLength(500)]],
       imageUrl: [''],
-      categoryId: ['', Validators.required]
+      categoryId: ['', Validators.required],
     });
 
     this.isEditMode = !!data?.product;
@@ -56,7 +56,7 @@ export class ProductFormDialogComponent implements OnInit {
       name: this.data.product!.name,
       description: this.data.product!.description,
       imageUrl: this.data.product!.imageUrl,
-      categoryId: this.data.product!.category.id
+      categoryId: this.data.product!.category.id,
     });
 
     if (this.data.product!.imageUrl) {
@@ -66,11 +66,11 @@ export class ProductFormDialogComponent implements OnInit {
 
   loadCategories(): void {
     this.categoryService.getAllCategories().subscribe({
-      next: (categories) => this.categories = categories,
-      error: (err) => {
+      next: categories => (this.categories = categories),
+      error: err => {
         console.error('Error al cargar las categorías', err);
         this.errorMessage = 'Error al cargar las categorías: ' + err.message;
-      }
+      },
     });
   }
 
@@ -78,7 +78,7 @@ export class ProductFormDialogComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      
+
       if (!file.type.match('image.*')) {
         this.errorMessage = 'Solo se permiten archivos de imagen.';
         return;
@@ -128,7 +128,7 @@ export class ProductFormDialogComponent implements OnInit {
       name: formValue.name,
       description: formValue.description,
       categoryId: formValue.categoryId,
-      imageUrl: formValue.imageUrl
+      imageUrl: formValue.imageUrl,
     };
 
     if (this.isEditMode) {
@@ -138,11 +138,11 @@ export class ProductFormDialogComponent implements OnInit {
         next: () => {
           this.dialogRef.close(true);
         },
-        error: (err) => {
+        error: err => {
           console.error('Error al crear el producto con imagen', err);
           this.errorMessage = 'Error al crear el producto: ' + err.message;
           this.loading = false;
-        }
+        },
       });
     }
   }
@@ -153,31 +153,33 @@ export class ProductFormDialogComponent implements OnInit {
       name: productData.name,
       description: productData.description,
       categoryId: productData.categoryId,
-      imageUrl: productData.imageUrl
+      imageUrl: productData.imageUrl,
     };
 
     this.productService.updateProduct(this.data.product!.id, updateData).subscribe({
       next: () => {
         if (this.selectedFile) {
-          this.productService.updateProductImage(this.data.product!.id, this.selectedFile).subscribe({
-            next: () => {
-              this.dialogRef.close(true);
-            },
-            error: (err) => {
-              console.error('Error al actualizar la imagen', err);
-              this.errorMessage = 'Error al actualizar la imagen: ' + err.message;
-              this.loading = false;
-            }
-          });
+          this.productService
+            .updateProductImage(this.data.product!.id, this.selectedFile)
+            .subscribe({
+              next: () => {
+                this.dialogRef.close(true);
+              },
+              error: err => {
+                console.error('Error al actualizar la imagen', err);
+                this.errorMessage = 'Error al actualizar la imagen: ' + err.message;
+                this.loading = false;
+              },
+            });
         } else {
           this.dialogRef.close(true);
         }
       },
-      error: (err) => {
+      error: err => {
         console.error('Error al actualizar el producto', err);
         this.errorMessage = 'Error al actualizar el producto: ' + err.message;
         this.loading = false;
-      }
+      },
     });
   }
 
@@ -187,33 +189,33 @@ export class ProductFormDialogComponent implements OnInit {
       next: () => {
         this.dialogRef.close(true);
       },
-      error: (err) => {
+      error: err => {
         console.error('Error al crear el producto', err);
         this.errorMessage = 'Error al crear el producto: ' + err.message;
         this.loading = false;
-      }
+      },
     });
   }
 
   private updateProduct(formValue: UpdateProductDto): void {
     const productData: UpdateProductDto = {
       ...formValue,
-      id: this.data.product!.id
+      id: this.data.product!.id,
     };
-    
+
     this.productService.updateProduct(this.data.product!.id, productData).subscribe({
       next: () => {
-        this.dialogRef.close(true); 
+        this.dialogRef.close(true);
       },
-      error: (err) => {
+      error: err => {
         console.error('Error al actualizar el producto', err);
         this.errorMessage = 'Error al actualizar el producto: ' + err.message;
         this.loading = false;
-      }
+      },
     });
   }
 
   onCancel(): void {
-    this.dialogRef.close(false); 
+    this.dialogRef.close(false);
   }
 }

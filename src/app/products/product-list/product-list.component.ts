@@ -2,7 +2,10 @@ import { Component, OnInit, OnDestroy, effect } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
-import { ProductFormDialogComponent, ProductFormDialogData } from '../product-form-dialog/product-form-dialog.component';
+import {
+  ProductFormDialogComponent,
+  ProductFormDialogData,
+} from '../product-form-dialog/product-form-dialog.component';
 import { Product } from '../models/product.model';
 import { ProductService } from '../product.service';
 import { AuthService } from '../../auth/auth.service';
@@ -15,7 +18,7 @@ import { PurchaseService } from '../services/purchase.service';
   standalone: false,
   selector: 'app-product-list',
   templateUrl: './product-list.component.html',
-  styleUrls: ['./product-list.component.scss']
+  styleUrls: ['./product-list.component.scss'],
 })
 export class ProductListComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
@@ -25,7 +28,14 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.isAdmin = Array.isArray(roles) ? roles.includes('Admin') : false;
     this.isEditor = Array.isArray(roles) ? roles.includes('Editor') : false;
     this.canEdit = this.isAdmin || this.isEditor;
-    console.log('Permisos establecidos - Admin:', this.isAdmin, 'Editor:', this.isEditor, 'Puede editar:', this.canEdit);
+    console.log(
+      'Permisos establecidos - Admin:',
+      this.isAdmin,
+      'Editor:',
+      this.isEditor,
+      'Puede editar:',
+      this.canEdit
+    );
   });
 
   products: Product[] = [];
@@ -53,7 +63,14 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.isEditor = Array.isArray(roles) ? roles.includes('Editor') : false;
     this.canEdit = this.isAdmin || this.isEditor;
     console.log('Roles en ngOnInit:', roles);
-    console.log('Permisos en ngOnInit - Admin:', this.isAdmin, 'Editor:', this.isEditor, 'Puede editar:', this.canEdit);
+    console.log(
+      'Permisos en ngOnInit - Admin:',
+      this.isAdmin,
+      'Editor:',
+      this.isEditor,
+      'Puede editar:',
+      this.canEdit
+    );
 
     this.subscriptions.add(
       this.productsState.products$.subscribe(products => {
@@ -92,7 +109,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
   loadProducts(): void {
     this.productsState.setLoading(true);
     this.productService.getProducts(this.pageNumber, this.pageSize).subscribe({
-      next: (paginatedResult) => {
+      next: paginatedResult => {
         this.productsState.setProducts(paginatedResult.items);
         this.productsState.setPagination(
           this.pageNumber,
@@ -101,17 +118,17 @@ export class ProductListComponent implements OnInit, OnDestroy {
         );
         this.productsState.setLoading(false);
       },
-      error: (error) => {
+      error: error => {
         this.productsState.setError(error.message);
         this.productsState.setLoading(false);
-      }
+      },
     });
   }
 
   onPageChange(event: PageEvent): void {
     this.productsState.setLoading(true);
     this.productService.getProducts(event.pageIndex + 1, event.pageSize).subscribe({
-      next: (paginatedResult) => {
+      next: paginatedResult => {
         this.productsState.setProducts(paginatedResult.items);
         this.productsState.setPagination(
           event.pageIndex + 1,
@@ -120,22 +137,22 @@ export class ProductListComponent implements OnInit, OnDestroy {
         );
         this.productsState.setLoading(false);
       },
-      error: (error) => {
+      error: error => {
         this.productsState.setError(error.message);
         this.productsState.setLoading(false);
-      }
+      },
     });
   }
 
   openCreateDialog(): void {
     const dialogRef = this.dialog.open(ProductFormDialogComponent, {
       width: '500px',
-      data: {} as ProductFormDialogData
+      data: {} as ProductFormDialogData,
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.loadProducts(); 
+        this.loadProducts();
       }
     });
   }
@@ -143,12 +160,12 @@ export class ProductListComponent implements OnInit, OnDestroy {
   openEditDialog(product: Product): void {
     const dialogRef = this.dialog.open(ProductFormDialogComponent, {
       width: '500px',
-      data: { product } as ProductFormDialogData
+      data: { product } as ProductFormDialogData,
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.loadProducts(); 
+        this.loadProducts();
       }
     });
   }
@@ -156,10 +173,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
   confirmDelete(product: Product): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '420px',
-      data: { 
-        title: 'Confirmar Eliminación', 
-        message: `¿Está seguro de que desea eliminar el producto "${product.name}"?` 
-      }
+      data: {
+        title: 'Confirmar Eliminación',
+        message: `¿Está seguro de que desea eliminar el producto "${product.name}"?`,
+      },
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -174,40 +191,40 @@ export class ProductListComponent implements OnInit, OnDestroy {
       next: () => {
         this.loadProducts();
       },
-      error: (err) => {
+      error: err => {
         console.error('Error al eliminar producto:', err);
+      },
+    });
+  }
+
+  onPurchase(product: Product): void {
+    const dialogRef = this.dialog.open(PurchaseDialogComponent, {
+      width: '500px',
+      data: { product },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.processPurchase(product.id, result.quantity);
       }
     });
   }
 
-onPurchase(product: Product): void {
-  const dialogRef = this.dialog.open(PurchaseDialogComponent, {
-    width: '500px',
-    data: { product }
-  });
-
-  dialogRef.afterClosed().subscribe(result => {
-    if (result) {
-      this.processPurchase(product.id, result.quantity);
-    }
-  });
-}
-
- private processPurchase(productId: string, quantity: number): void {
-  this.purchaseService.quickPurchase(productId, quantity).subscribe({
-    next: (response) => {
-      if (response.success) {
-        console.log('Compra exitosa:', response.message);
-        alert(`¡Compra exitosa! ${response.message}`);
-      } else {
-        console.error('Error en la compra:', response.message);
-        alert(`Error: ${response.message}`);
-      }
-    },
-    error: (error) => {
-      console.error('Error al procesar la compra:', error);
-      alert('Ocurrió un error al procesar tu compra. Por favor, intenta nuevamente.');
-    }
-  });
-}
+  private processPurchase(productId: string, quantity: number): void {
+    this.purchaseService.quickPurchase(productId, quantity).subscribe({
+      next: response => {
+        if (response.success) {
+          console.log('Compra exitosa:', response.message);
+          alert(`¡Compra exitosa! ${response.message}`);
+        } else {
+          console.error('Error en la compra:', response.message);
+          alert(`Error: ${response.message}`);
+        }
+      },
+      error: error => {
+        console.error('Error al procesar la compra:', error);
+        alert('Ocurrió un error al procesar tu compra. Por favor, intenta nuevamente.');
+      },
+    });
+  }
 }

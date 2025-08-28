@@ -39,7 +39,7 @@ const MATERIAL = [
   MatTooltipModule,
   MatSelectModule,
   MatOptionModule,
-  MatProgressBarModule
+  MatProgressBarModule,
 ];
 
 @NgModule({

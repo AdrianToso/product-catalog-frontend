@@ -10,7 +10,7 @@
   <form [formGroup]="purchaseForm" class="purchase-form">
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Cantidad</mat-label>
-      <input matInput type="number" formControlName="quantity" min="1" max="100" required>
+      <input matInput type="number" formControlName="quantity" min="1" max="100" required />
       <mat-error *ngIf="purchaseForm.get('quantity')?.hasError('required')">
         La cantidad es requerida
       </mat-error>
@@ -30,12 +30,7 @@
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="onCancel()">Cancelar</button>
-  <button 
-    mat-raised-button 
-    color="primary" 
-    (click)="onConfirm()"
-    [disabled]="purchaseForm.invalid"
-  >
+  <button mat-raised-button color="primary" (click)="onConfirm()" [disabled]="purchaseForm.invalid">
     Confirmar Compra
   </button>
 </mat-dialog-actions>

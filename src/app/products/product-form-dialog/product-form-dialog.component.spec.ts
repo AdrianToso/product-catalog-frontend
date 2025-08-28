@@ -20,11 +20,11 @@ describe('ProductFormDialogComponent', () => {
       createProduct: jest.fn().mockReturnValue(of({})),
       updateProduct: jest.fn().mockReturnValue(of({})),
       createProductWithImage: jest.fn().mockReturnValue(of({})),
-      updateProductImage: jest.fn().mockReturnValue(of({}))
+      updateProductImage: jest.fn().mockReturnValue(of({})),
     };
 
     mockCategoryService = {
-      getAllCategories: jest.fn().mockReturnValue(of([]))
+      getAllCategories: jest.fn().mockReturnValue(of([])),
     };
 
     mockDialogRef = { close: jest.fn() };
@@ -36,8 +36,8 @@ describe('ProductFormDialogComponent', () => {
         { provide: ProductService, useValue: mockProductService },
         { provide: CategoryService, useValue: mockCategoryService },
         { provide: MatDialogRef, useValue: mockDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {} as ProductFormDialogData }
-      ]
+        { provide: MAT_DIALOG_DATA, useValue: {} as ProductFormDialogData },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProductFormDialogComponent);
@@ -84,7 +84,9 @@ describe('ProductFormDialogComponent', () => {
   });
 
   it('should reject large image file', () => {
-    const largeFile = new File([new ArrayBuffer(6 * 1024 * 1024)], 'large.png', { type: 'image/png' });
+    const largeFile = new File([new ArrayBuffer(6 * 1024 * 1024)], 'large.png', {
+      type: 'image/png',
+    });
     const event = { target: { files: [largeFile] } } as unknown as Event;
     component.onFileSelected(event);
     expect(component.selectedFile).toBeNull();
@@ -95,7 +97,7 @@ describe('ProductFormDialogComponent', () => {
     component.productForm.patchValue({
       name: 'Test',
       description: 'Desc',
-      categoryId: 1
+      categoryId: 1,
     });
     component.onSubmit();
     expect(mockProductService['createProduct']).toHaveBeenCalled();
@@ -103,24 +105,38 @@ describe('ProductFormDialogComponent', () => {
 
   it('should submit update product in edit mode without image', () => {
     component.isEditMode = true;
-    component.data.product = { id: 1, name: 'A', description: 'B', imageUrl: '', category: { id: 1, name: 'Cat' } } as any;
+    component.data.product = {
+      id: 1,
+      name: 'A',
+      description: 'B',
+      imageUrl: '',
+      category: { id: 1, name: 'Cat' },
+    } as any;
     component.productForm.patchValue({
       name: 'Test',
       description: 'Desc',
-      categoryId: 1
+      categoryId: 1,
     });
     component.onSubmit();
     expect(mockProductService['updateProduct']).toHaveBeenCalled();
   });
 
   it('should handle error loading categories', () => {
-    mockCategoryService['getAllCategories'].mockReturnValueOnce(throwError(() => new Error('fail')));
+    mockCategoryService['getAllCategories'].mockReturnValueOnce(
+      throwError(() => new Error('fail'))
+    );
     component.loadCategories();
     expect(component.errorMessage).toContain('fail');
   });
 
   it('should load product for edit', () => {
-    component.data.product = { id: 1, name: 'A', description: 'B', imageUrl: 'img.png', category: { id: 1, name: 'Cat' } } as any;
+    component.data.product = {
+      id: 1,
+      name: 'A',
+      description: 'B',
+      imageUrl: 'img.png',
+      category: { id: 1, name: 'Cat' },
+    } as any;
     component.loadProductForEdit();
     expect(component.productForm.value.name).toBe('A');
     expect(component.imagePreview).toBe('img.png');

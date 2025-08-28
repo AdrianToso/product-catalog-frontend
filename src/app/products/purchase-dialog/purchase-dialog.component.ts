@@ -11,7 +11,7 @@ export interface PurchaseDialogData {
   standalone: false,
   selector: 'app-purchase-dialog',
   templateUrl: './purchase-dialog.component.html',
-  styleUrls: ['./purchase-dialog.component.scss']
+  styleUrls: ['./purchase-dialog.component.scss'],
 })
 export class PurchaseDialogComponent {
   purchaseForm: FormGroup;
@@ -22,7 +22,7 @@ export class PurchaseDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: PurchaseDialogData
   ) {
     this.purchaseForm = this.fb.group({
-      quantity: [1, [Validators.required, Validators.min(1), Validators.max(100)]]
+      quantity: [1, [Validators.required, Validators.min(1), Validators.max(100)]],
     });
   }
 

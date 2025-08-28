@@ -8,28 +8,26 @@ import { CreateProductDto } from './models/create-product.dto';
 import { UpdateProductDto } from './models/update-product.dto';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductService {
   private apiUrl = `${environment.apiUrl}Products`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   getProducts(pageNumber: number, pageSize: number): Observable<PaginatedResult<Product>> {
     const params = new HttpParams()
       .set('pageNumber', pageNumber.toString())
       .set('pageSize', pageSize.toString());
 
-    return this.http.get<PaginatedResult<Product>>(this.apiUrl, { params })
-      .pipe(
-        tap(response => console.log('Respuesta del backend:', response)),
-        catchError(this.handleError)
-      );
+    return this.http.get<PaginatedResult<Product>>(this.apiUrl, { params }).pipe(
+      tap(response => console.log('Respuesta del backend:', response)),
+      catchError(this.handleError)
+    );
   }
 
   createProduct(product: CreateProductDto): Observable<string> {
-    return this.http.post<string>(this.apiUrl, product)
-      .pipe(catchError(this.handleError));
+    return this.http.post<string>(this.apiUrl, product).pipe(catchError(this.handleError));
   }
 
   // Nuevo método para crear producto con imagen
@@ -38,23 +36,22 @@ export class ProductService {
     formData.append('Name', productData.name);
     formData.append('Description', productData.description);
     formData.append('CategoryId', productData.categoryId);
-    
+
     if (imageFile) {
       formData.append('ImageFile', imageFile);
     }
 
-    return this.http.post<string>(`${this.apiUrl}/with-image`, formData)
+    return this.http
+      .post<string>(`${this.apiUrl}/with-image`, formData)
       .pipe(catchError(this.handleError));
   }
 
   getProductById(id: string): Observable<Product> {
-    return this.http.get<Product>(`${this.apiUrl}/${id}`)
-      .pipe(catchError(this.handleError));
+    return this.http.get<Product>(`${this.apiUrl}/${id}`).pipe(catchError(this.handleError));
   }
 
   updateProduct(id: string, product: UpdateProductDto): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}`, product)
-      .pipe(catchError(this.handleError));
+    return this.http.put<void>(`${this.apiUrl}/${id}`, product).pipe(catchError(this.handleError));
   }
 
   // Nuevo método para actualizar imagen de producto existente
@@ -62,22 +59,22 @@ export class ProductService {
     const formData = new FormData();
     formData.append('file', imageFile);
 
-    return this.http.post<void>(`${this.apiUrl}/${id}/image`, formData)
+    return this.http
+      .post<void>(`${this.apiUrl}/${id}/image`, formData)
       .pipe(catchError(this.handleError));
   }
 
   deleteProduct(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`)
-      .pipe(catchError(this.handleError));
+    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(catchError(this.handleError));
   }
 
   private handleError(error: unknown): Observable<never> {
     console.error('API Error:', error);
     let errorMessage = 'Ocurrió un error inesperado.';
-    
+
     if (typeof error === 'object' && error !== null) {
       const err = error as { error?: { title?: string }; message?: string };
-      
+
       if (err.error?.title) {
         errorMessage = err.error.title;
       } else if (err.message) {
@@ -86,7 +83,7 @@ export class ProductService {
     } else if (typeof error === 'string') {
       errorMessage = error;
     }
-    
+
     return throwError(() => new Error(errorMessage));
   }
 }

@@ -4,7 +4,7 @@ import {
   HttpHandler,
   HttpEvent,
   HttpInterceptor,
-  HttpErrorResponse
+  HttpErrorResponse,
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -13,7 +13,6 @@ import { Router } from '@angular/router';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-
   constructor(
     private authService: AuthService,
     private router: Router
@@ -21,7 +20,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const token = this.authService.getToken();
-    
+
     // Logs de depuración
     console.log('AuthInterceptor: Token presente', !!token);
     console.log('AuthInterceptor: URL de la solicitud', request.url);
@@ -30,10 +29,10 @@ export class AuthInterceptor implements HttpInterceptor {
       // Clonar la request y agregar el header de autorización
       request = request.clone({
         setHeaders: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
-      
+
       console.log('AuthInterceptor: Header Authorization agregado');
     } else {
       console.warn('AuthInterceptor: No se encontró token, request sin autenticación');

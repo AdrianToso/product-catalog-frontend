@@ -8,7 +8,7 @@ import { finalize } from 'rxjs';
   standalone: false,
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
   loginForm: FormGroup;
@@ -22,7 +22,7 @@ export class LoginComponent {
   ) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
-      password: ['', Validators.required]
+      password: ['', Validators.required],
     });
   }
 
@@ -35,17 +35,16 @@ export class LoginComponent {
     this.errorMessage = '';
     const { username, password } = this.loginForm.value;
 
-    this.authService.login(username, password)
-      .pipe(
-        finalize(() => this.loading = false)
-      )
+    this.authService
+      .login(username, password)
+      .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: () => {
           this.router.navigate(['/products']);
         },
-        error: (err) => {
+        error: err => {
           this.errorMessage = err.message;
-        }
+        },
       });
   }
 }

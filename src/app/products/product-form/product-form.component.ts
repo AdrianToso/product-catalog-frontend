@@ -11,7 +11,7 @@ import { Router, ActivatedRoute } from '@angular/router';
   standalone: false,
   selector: 'app-product-form',
   templateUrl: './product-form.component.html',
-  styleUrls: ['./product-form.component.scss']
+  styleUrls: ['./product-form.component.scss'],
 })
 export class ProductFormComponent implements OnInit {
   productForm: FormGroup;
@@ -34,7 +34,7 @@ export class ProductFormComponent implements OnInit {
       name: ['', [Validators.required, Validators.maxLength(200)]],
       description: ['', [Validators.required, Validators.maxLength(500)]],
       imageUrl: [''],
-      categoryId: ['', Validators.required]
+      categoryId: ['', Validators.required],
     });
   }
 
@@ -42,7 +42,7 @@ export class ProductFormComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.productId = params.get('id');
       this.isEditMode = !!this.productId;
-      
+
       if (this.isEditMode && this.productId) {
         this.loadProductForEdit();
       }
@@ -53,12 +53,12 @@ export class ProductFormComponent implements OnInit {
   loadProductForEdit(): void {
     this.loading = true;
     this.productService.getProductById(this.productId!).subscribe({
-      next: (product) => {
+      next: product => {
         this.productForm.patchValue({
           name: product.name,
           description: product.description,
           imageUrl: product.imageUrl,
-          categoryId: product.category.id
+          categoryId: product.category.id,
         });
 
         if (product.imageUrl) {
@@ -66,48 +66,48 @@ export class ProductFormComponent implements OnInit {
         }
         this.loading = false;
       },
-      error: (err) => {
+      error: err => {
         console.error('Error al cargar el producto', err);
         this.errorMessage = 'Error al cargar el producto: ' + err.message;
         this.loading = false;
-      }
+      },
     });
   }
 
   loadCategories(): void {
     this.categoryService.getAllCategories().subscribe({
-      next: (categories) => this.categories = categories,
-      error: (err) => {
+      next: categories => (this.categories = categories),
+      error: err => {
         console.error('Error al cargar las categorías', err);
         this.errorMessage = 'Error al cargar las categorías: ' + err.message;
-      }
+      },
     });
   }
 
-onFileSelected(event: Event): void {
+  onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-        const file = input.files[0];
-        if (!file.type.match('image.*')) {
-            this.errorMessage = 'Solo se permiten archivos de imagen.';
-            return;
-        }
+      const file = input.files[0];
+      if (!file.type.match('image.*')) {
+        this.errorMessage = 'Solo se permiten archivos de imagen.';
+        return;
+      }
 
-        if (file.size > 5 * 1024 * 1024) {
-            this.errorMessage = 'La imagen no puede superar los 5MB.';
-            return;
-        }
+      if (file.size > 5 * 1024 * 1024) {
+        this.errorMessage = 'La imagen no puede superar los 5MB.';
+        return;
+      }
 
-        this.selectedFile = file;
-        this.errorMessage = '';
+      this.selectedFile = file;
+      this.errorMessage = '';
 
-        const reader = new FileReader();
-        reader.onload = () => {
-            this.imagePreview = reader.result;
-        };
-        reader.readAsDataURL(file);
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview = reader.result;
+      };
+      reader.readAsDataURL(file);
     }
-}
+  }
 
   removeImage(): void {
     this.selectedFile = null;
@@ -137,7 +137,7 @@ onFileSelected(event: Event): void {
       name: formValue.name,
       description: formValue.description,
       categoryId: formValue.categoryId,
-      imageUrl: formValue.imageUrl
+      imageUrl: formValue.imageUrl,
     };
 
     if (this.isEditMode) {
@@ -147,11 +147,11 @@ onFileSelected(event: Event): void {
         next: () => {
           this.router.navigate(['/products']);
         },
-        error: (err) => {
+        error: err => {
           console.error('Error al crear el producto con imagen', err);
           this.errorMessage = 'Error al crear el producto: ' + err.message;
           this.loading = false;
-        }
+        },
       });
     }
   }
@@ -162,7 +162,7 @@ onFileSelected(event: Event): void {
       name: productData.name,
       description: productData.description,
       categoryId: productData.categoryId,
-      imageUrl: productData.imageUrl
+      imageUrl: productData.imageUrl,
     };
 
     this.productService.updateProduct(this.productId!, updateData).subscribe({
@@ -172,21 +172,21 @@ onFileSelected(event: Event): void {
             next: () => {
               this.router.navigate(['/products']);
             },
-            error: (err) => {
+            error: err => {
               console.error('Error al actualizar la imagen', err);
               this.errorMessage = 'Error al actualizar la imagen: ' + err.message;
               this.loading = false;
-            }
+            },
           });
         } else {
           this.router.navigate(['/products']);
         }
       },
-      error: (err) => {
+      error: err => {
         console.error('Error al actualizar el producto', err);
         this.errorMessage = 'Error al actualizar el producto: ' + err.message;
         this.loading = false;
-      }
+      },
     });
   }
 
@@ -196,29 +196,29 @@ onFileSelected(event: Event): void {
       next: () => {
         this.router.navigate(['/products']);
       },
-      error: (err) => {
+      error: err => {
         console.error('Error al crear el producto', err);
         this.errorMessage = 'Error al crear el producto: ' + err.message;
         this.loading = false;
-      }
+      },
     });
   }
 
   private updateProduct(formValue: UpdateProductDto): void {
     const productData: UpdateProductDto = {
       ...formValue,
-      id: this.productId!
+      id: this.productId!,
     };
-    
+
     this.productService.updateProduct(this.productId!, productData).subscribe({
       next: () => {
         this.router.navigate(['/products']);
       },
-      error: (err) => {
+      error: err => {
         console.error('Error al actualizar el producto', err);
         this.errorMessage = 'Error al actualizar el producto: ' + err.message;
         this.loading = false;
-      }
+      },
     });
   }
 

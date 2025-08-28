@@ -5,12 +5,12 @@ import { environment } from '../../../environments/environment';
 import { Category } from '../models/category.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CategoryService {
   private apiUrl = `${environment.apiUrl}Categories`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   getAllCategories(): Observable<Category[]> {
     console.log('Solicitando categorías desde:', this.apiUrl);

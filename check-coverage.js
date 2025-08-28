@@ -6,7 +6,7 @@ const MIN_THRESHOLDS = {
   statements: 80,
   branches: 70,
   functions: 80,
-  lines: 80
+  lines: 80,
 };
 
 // Ruta al archivo de resumen de cobertura
@@ -28,7 +28,9 @@ for (const category of Object.keys(MIN_THRESHOLDS)) {
   const min = MIN_THRESHOLDS[category];
 
   if (actual < min) {
-    console.error(`❌ Cobertura de ${category} insuficiente: ${actual}% (mínimo requerido: ${min}%)`);
+    console.error(
+      `❌ Cobertura de ${category} insuficiente: ${actual}% (mínimo requerido: ${min}%)`
+    );
     failed = true;
   } else {
     console.log(`✅ Cobertura de ${category}: ${actual}% (requerido: ${min}%)`);

@@ -7,16 +7,14 @@ import { MaterialModule } from '../shared/material.module';
 import { LoginComponent } from './login.component';
 
 @NgModule({
-  declarations: [
-    LoginComponent
-  ],
+  declarations: [LoginComponent],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MaterialModule,
-    HttpClientModule, 
-    RouterModule.forChild([{ path: 'login', component: LoginComponent }])
-  ]
+    HttpClientModule,
+    RouterModule.forChild([{ path: 'login', component: LoginComponent }]),
+  ],
 })
-export class AuthModule { }
+export class AuthModule {}

@@ -10,7 +10,7 @@ describe('PurchaseService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [PurchaseService]
+      providers: [PurchaseService],
     });
     service = TestBed.inject(PurchaseService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -40,7 +40,7 @@ describe('PurchaseService', () => {
 
   it('quickPurchase should call purchaseProduct with defaults', () => {
     const spy = jest.spyOn(service, 'purchaseProduct').mockReturnValue({
-      subscribe: jest.fn()
+      subscribe: jest.fn(),
     } as any);
 
     service.quickPurchase('p1');
@@ -50,7 +50,7 @@ describe('PurchaseService', () => {
 
   it('quickPurchase should call purchaseProduct with custom quantity', () => {
     const spy = jest.spyOn(service, 'purchaseProduct').mockReturnValue({
-      subscribe: jest.fn()
+      subscribe: jest.fn(),
     } as any);
 
     service.quickPurchase('p1', 5);

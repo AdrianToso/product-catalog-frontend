@@ -7,7 +7,7 @@
       <form [formGroup]="loginForm" (ngSubmit)="login()">
         <mat-form-field appearance="fill">
           <mat-label>Usuario</mat-label>
-          <input matInput formControlName="username" name="username" required>
+          <input matInput formControlName="username" name="username" required />
           <mat-error *ngIf="loginForm.get('username')?.hasError('required')">
             El nombre de usuario es requerido.
           </mat-error>
@@ -15,7 +15,7 @@
 
         <mat-form-field appearance="fill">
           <mat-label>Contraseña</mat-label>
-          <input matInput formControlName="password" name="password" type="password" required>
+          <input matInput formControlName="password" name="password" type="password" required />
           <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
             La contraseña es requerida.
           </mat-error>
@@ -25,7 +25,12 @@
           {{ errorMessage }}
         </div>
 
-        <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid || loading">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="loginForm.invalid || loading"
+        >
           <span *ngIf="!loading">Ingresar</span>
           <mat-spinner *ngIf="loading" diameter="24"></mat-spinner>
         </button>

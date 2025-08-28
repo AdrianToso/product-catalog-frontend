@@ -8,7 +8,7 @@ describe('ProductsStateService', () => {
   const mockCategory: Category = {
     id: 'cat-123',
     name: 'Electronics',
-    description: 'Category description'
+    description: 'Category description',
   };
 
   const mockProduct1: Product = {
@@ -16,7 +16,7 @@ describe('ProductsStateService', () => {
     name: 'Product 1',
     description: 'Test Description 1',
     imageUrl: 'image1.jpg',
-    category: mockCategory
+    category: mockCategory,
   };
 
   const mockProduct2: Product = {
@@ -24,7 +24,7 @@ describe('ProductsStateService', () => {
     name: 'Product 2',
     description: 'Test Description 2',
     imageUrl: 'image2.jpg',
-    category: mockCategory
+    category: mockCategory,
   };
 
   beforeEach(() => {
@@ -36,7 +36,7 @@ describe('ProductsStateService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should set and get products', (done) => {
+  it('should set and get products', done => {
     service.setProducts([mockProduct1, mockProduct2]);
     service.products$.subscribe(products => {
       expect(products.length).toBe(2);
@@ -46,7 +46,7 @@ describe('ProductsStateService', () => {
     });
   });
 
-  it('should add a product', (done) => {
+  it('should add a product', done => {
     service.setProducts([]);
     service.addProduct(mockProduct1);
     service.products$.subscribe(products => {
@@ -56,7 +56,7 @@ describe('ProductsStateService', () => {
     });
   });
 
-  it('should update a product', (done) => {
+  it('should update a product', done => {
     const updatedProduct = { ...mockProduct1, name: 'Updated Product 1' };
     service.setProducts([mockProduct1]);
     service.updateProduct(updatedProduct);
@@ -66,7 +66,7 @@ describe('ProductsStateService', () => {
     });
   });
 
-  it('should remove a product', (done) => {
+  it('should remove a product', done => {
     service.setProducts([mockProduct1, mockProduct2]);
     service.removeProduct(mockProduct1.id);
     service.products$.subscribe(products => {
@@ -76,7 +76,7 @@ describe('ProductsStateService', () => {
     });
   });
 
-  it('should set and get loading state', (done) => {
+  it('should set and get loading state', done => {
     service.setLoading(true);
     service.loading$.subscribe(loading => {
       expect(loading).toBe(true);
@@ -84,7 +84,7 @@ describe('ProductsStateService', () => {
     });
   });
 
-  it('should set and get error state', (done) => {
+  it('should set and get error state', done => {
     service.setError('Test error');
     service.error$.subscribe(error => {
       expect(error).toBe('Test error');
@@ -92,7 +92,7 @@ describe('ProductsStateService', () => {
     });
   });
 
-  it('should set and get pagination', (done) => {
+  it('should set and get pagination', done => {
     service.setPagination(2, 20, 100);
     service.pagination$.subscribe(pagination => {
       expect(pagination.page).toBe(2);

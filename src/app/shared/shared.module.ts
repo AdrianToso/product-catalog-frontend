@@ -5,6 +5,6 @@ import { BytesPipe } from './pipes/bytes.pipe';
 @NgModule({
   declarations: [BytesPipe],
   imports: [CommonModule],
-  exports: [BytesPipe]
+  exports: [BytesPipe],
 })
-export class SharedModule { }
+export class SharedModule {}

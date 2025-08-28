@@ -23,10 +23,10 @@ describe('LoadingInterceptor', () => {
         {
           provide: HTTP_INTERCEPTORS,
           useClass: LoadingInterceptor,
-          multi: true
+          multi: true,
         },
-        { provide: LoadingService, useClass: MockLoadingService }
-      ]
+        { provide: LoadingService, useClass: MockLoadingService },
+      ],
     });
 
     httpMock = TestBed.inject(HttpTestingController);
