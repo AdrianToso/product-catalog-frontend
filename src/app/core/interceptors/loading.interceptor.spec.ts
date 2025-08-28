@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-
+import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 
 import { LoadingInterceptor } from './loading.interceptor';
 import { LoadingService } from '../services/loading.service';
@@ -49,6 +49,8 @@ describe('LoadingInterceptor', () => {
     // Verificar que show fue llamado
     expect(loadingService.show).toHaveBeenCalled();
 
+    const httpRequest = httpMock.expectOne('/test');
+    httpRequest.flush({}); // Completar la solicitud
 
     // Verificar que hide fue llamado después de completar la solicitud
     expect(loadingService.hide).toHaveBeenCalled();
@@ -70,4 +72,3 @@ describe('LoadingInterceptor', () => {
     expect(loadingService.hide).toHaveBeenCalledTimes(2);
   });
 });
-
