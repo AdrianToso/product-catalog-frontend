@@ -5,18 +5,21 @@ import { AuthInterceptor } from './auth.interceptor';
 import { AuthService } from '../../auth/auth.service';
 import { Router } from '@angular/router';
 
-// Mocks para los servicios
+// Mocks
 class MockAuthService {
-  getToken() { return 'test-token'; }
+  getToken(): string | null { return 'test-token'; }
+  logout = jest.fn();
 }
 
 class MockRouter {
-  navigate = jest.fn(); // Cambiado de jasmine.createSpy a jest.fn
+  navigate = jest.fn();
 }
 
 describe('AuthInterceptor', () => {
   let httpMock: HttpTestingController;
   let httpClient: HttpClient;
+  let authService: MockAuthService;
+  let router: MockRouter;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -34,17 +37,58 @@ describe('AuthInterceptor', () => {
 
     httpMock = TestBed.inject(HttpTestingController);
     httpClient = TestBed.inject(HttpClient);
+    authService = TestBed.inject(AuthService) as unknown as MockAuthService;
+    router = TestBed.inject(Router) as unknown as MockRouter;
   });
 
   afterEach(() => {
     httpMock.verify();
+    jest.clearAllMocks();
   });
 
-  it('should add Authorization header with token', () => {
+  it('should add Authorization header when token is present', () => {
     httpClient.get('/test').subscribe();
 
-    const httpRequest = httpMock.expectOne('/test');
-    expect(httpRequest.request.headers.has('Authorization')).toBeTruthy();
-    expect(httpRequest.request.headers.get('Authorization')).toBe('Bearer test-token');
+    const req = httpMock.expectOne('/test');
+    const authHeader = req.request.headers.get('Authorization');
+    expect(authHeader).not.toBeNull();
+    expect(authHeader).toBe('Bearer test-token');
+    req.flush({}); // responder request
+  });
+
+  it('should not add Authorization header when token is absent', () => {
+    jest.spyOn(authService, 'getToken').mockReturnValue(null);
+
+    httpClient.get('/test').subscribe();
+
+    const req = httpMock.expectOne('/test');
+    expect(req.request.headers.has('Authorization')).toBe(false);
+    req.flush({});
+  });
+
+  it('should logout and redirect on 401 error', () => {
+    httpClient.get('/test').subscribe({
+      error: () => {} // evitar error en subscribe
+    });
+
+    const req = httpMock.expectOne('/test');
+    req.flush({}, { status: 401, statusText: 'Unauthorized' });
+
+    expect(authService.logout).toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
+  });
+
+  it('should throw error for non-401 errors', () => {
+    let caughtError: any;
+    httpClient.get('/test').subscribe({
+      error: (err) => caughtError = err
+    });
+
+    const req = httpMock.expectOne('/test');
+    req.flush({}, { status: 500, statusText: 'Server Error' });
+
+    expect(caughtError.status).toBe(500);
+    expect(authService.logout).not.toHaveBeenCalled();
+    expect(router.navigate).not.toHaveBeenCalled();
   });
 });
