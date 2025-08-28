@@ -8,11 +8,50 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Ejecutar pruebas
-echo "Running tests..."
-npm test
+# Ejecutar pruebas con cobertura en formato JSON summary
+echo "Running tests with coverage..."
+npx jest --config jest.config.cjs --coverage --coverageReporters=json-summary
+
+# Verificar cobertura mínima usando Node.js para procesar el JSON summary
+node -e "
+const fs = require('fs');
+const path = require('path');
+
+// Leer el archivo de cobertura summary
+const coveragePath = path.join(__dirname, 'coverage', 'coverage-summary.json');
+const rawData = fs.readFileSync(coveragePath);
+const coverageSummary = JSON.parse(rawData);
+
+// Obtener los totales
+const totals = coverageSummary.total;
+
+const thresholds = {
+  lines: 50,
+  statements: 50,
+  branches: 30,
+  functions: 30
+};
+
+let failed = false;
+
+for (const [key, threshold] of Object.entries(thresholds)) {
+  const coverageValue = totals[key]?.pct;
+  if (coverageValue === undefined) {
+    console.error(\`Could not find coverage data for \${key}\`);
+    failed = true;
+  } else if (coverageValue < threshold) {
+    console.error(\`\${key} coverage is below threshold: \${coverageValue}% < \${threshold}%\`);
+    failed = true;
+  } else {
+    console.log(\`\${key} coverage: \${coverageValue}% >= \${threshold}%\`);
+  }
+}
+
+process.exit(failed ? 1 : 0);
+"
+
 if [ $? -ne 0 ]; then
-    echo "Tests failed. Please fix the issues before committing."
+    echo "Coverage check failed. Please improve test coverage before committing."
     exit 1
 fi
 
