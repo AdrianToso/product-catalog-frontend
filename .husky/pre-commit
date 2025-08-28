@@ -1,15 +1,16 @@
-#!/usr/bin/env pwsh
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
 
 # Ejecutar ESLint
 npm run lint
-if ($LASTEXITCODE -ne 0) { 
-    Write-Error "ESLint failed. Please fix the issues before committing."
-    exit $LASTEXITCODE
-}
+if [ $? -ne 0 ]; then
+    echo "ESLint failed. Please fix the issues before committing."
+    exit 1
+fi
 
 # Ejecutar pruebas
 npm test
-if ($LASTEXITCODE -ne 0) { 
-    Write-Error "Tests failed. Please fix the issues before committing."
-    exit $LASTEXITCODE
-}
+if [ $? -ne 0 ]; then
+    echo "Tests failed. Please fix the issues before committing."
+    exit 1
+fi
