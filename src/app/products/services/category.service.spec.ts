@@ -19,7 +19,7 @@ describe('CategoryService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [CategoryService]
+      providers: [CategoryService],
     });
 
     service = TestBed.inject(CategoryService);
@@ -41,7 +41,10 @@ describe('CategoryService', () => {
   it('should fetch all categories and log them', () => {
     service.getAllCategories().subscribe(categories => {
       expect(categories).toEqual(mockCategories);
-      expect(consoleLogSpy).toHaveBeenCalledWith('Solicitando categorías desde:', `${environment.apiUrl}Categories`);
+      expect(consoleLogSpy).toHaveBeenCalledWith(
+        'Solicitando categorías desde:',
+        `${environment.apiUrl}Categories`
+      );
       expect(consoleLogSpy).toHaveBeenCalledWith('Categorías recibidas:', mockCategories);
     });
 
@@ -56,7 +59,7 @@ describe('CategoryService', () => {
 
     service.getAllCategories().subscribe({
       next: () => {},
-      error: (err) => errorResponse = err
+      error: err => (errorResponse = err),
     });
 
     const req = httpMock.expectOne(`${environment.apiUrl}Categories`);
@@ -65,8 +68,8 @@ describe('CategoryService', () => {
     expect(errorResponse.status).toBe(500);
     expect(errorResponse.error.message).toBe(errorMessage);
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-  'Error al obtener categorías:', 
-  expect.anything()  // <- esto es seguro y funciona en Jest
-);
+      'Error al obtener categorías:',
+      expect.anything() // <- esto es seguro y funciona en Jest
+    );
   });
 });

@@ -23,7 +23,7 @@ describe('ProductFormComponent', () => {
   const mockCategory: Category = {
     id: '1',
     name: 'Test Category',
-    description: 'Test Description'
+    description: 'Test Description',
   };
 
   const mockProduct: Product = {
@@ -31,7 +31,7 @@ describe('ProductFormComponent', () => {
     name: 'Product 1',
     description: 'Desc 1',
     imageUrl: 'url.jpg',
-    category: mockCategory
+    category: mockCategory,
   } as unknown as Product;
 
   beforeEach(async () => {
@@ -42,11 +42,11 @@ describe('ProductFormComponent', () => {
       createProduct: jest.fn(),
       updateProduct: jest.fn(),
       createProductWithImage: jest.fn(),
-      updateProductImage: jest.fn()
+      updateProductImage: jest.fn(),
     };
 
     mockCategoryService = {
-      getAllCategories: jest.fn().mockReturnValue(of([mockCategory]))
+      getAllCategories: jest.fn().mockReturnValue(of([mockCategory])),
     };
 
     await TestBed.configureTestingModule({
@@ -55,12 +55,12 @@ describe('ProductFormComponent', () => {
         ReactiveFormsModule,
         RouterTestingModule.withRoutes([]),
         NoopAnimationsModule,
-        MaterialModule
+        MaterialModule,
       ],
       providers: [
         { provide: ProductService, useValue: mockProductService },
-        { provide: CategoryService, useValue: mockCategoryService }
-      ]
+        { provide: CategoryService, useValue: mockCategoryService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProductFormComponent);
@@ -136,7 +136,9 @@ describe('ProductFormComponent', () => {
     });
 
     it('rejects large image file', () => {
-      const largeFile = new File([new ArrayBuffer(6 * 1024 * 1024)], 'big.png', { type: 'image/png' });
+      const largeFile = new File([new ArrayBuffer(6 * 1024 * 1024)], 'big.png', {
+        type: 'image/png',
+      });
       const input = document.createElement('input');
       Object.defineProperty(input, 'files', { value: [largeFile] });
       const event = { target: input } as unknown as Event;
@@ -157,42 +159,57 @@ describe('ProductFormComponent', () => {
         name: 'A',
         description: 'B',
         imageUrl: '',
-        categoryId: '1'
+        categoryId: '1',
       });
     });
 
     it('creates product without image and navigates', () => {
       mockProductService['createProduct'].mockReturnValue(of({}));
-      const navSpy = jest.spyOn(router, 'navigate').mockImplementation(() => Promise.resolve(true) as any);
+      const navSpy = jest
+        .spyOn(router, 'navigate')
+        .mockImplementation(() => Promise.resolve(true) as any);
 
       component.isEditMode = false;
       component.selectedFile = null;
       component.onSubmit();
 
-      expect(mockProductService['createProduct']).toHaveBeenCalledWith(expect.objectContaining({
-        name: 'A', description: 'B', categoryId: '1'
-      }));
+      expect(mockProductService['createProduct']).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'A',
+          description: 'B',
+          categoryId: '1',
+        })
+      );
       expect(navSpy).toHaveBeenCalledWith(['/products']);
     });
 
     it('creates product with image and navigates', () => {
       const file = new File(['f'], 'i.png', { type: 'image/png' });
       mockProductService['createProductWithImage'].mockReturnValue(of({}));
-      const navSpy = jest.spyOn(router, 'navigate').mockImplementation(() => Promise.resolve(true) as any);
+      const navSpy = jest
+        .spyOn(router, 'navigate')
+        .mockImplementation(() => Promise.resolve(true) as any);
 
       component.isEditMode = false;
       component.selectedFile = file;
       component.onSubmit();
 
-      expect(mockProductService['createProductWithImage']).toHaveBeenCalledWith(expect.objectContaining({
-        name: 'A', description: 'B', categoryId: '1'
-      }), file);
+      expect(mockProductService['createProductWithImage']).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'A',
+          description: 'B',
+          categoryId: '1',
+        }),
+        file
+      );
       expect(navSpy).toHaveBeenCalledWith(['/products']);
     });
 
     it('updates product without image and navigates', () => {
       mockProductService['updateProduct'].mockReturnValue(of({}));
-      const navSpy = jest.spyOn(router, 'navigate').mockImplementation(() => Promise.resolve(true) as any);
+      const navSpy = jest
+        .spyOn(router, 'navigate')
+        .mockImplementation(() => Promise.resolve(true) as any);
 
       component.isEditMode = true;
       component.productId = '10';
@@ -207,7 +224,9 @@ describe('ProductFormComponent', () => {
       const file = new File(['f'], 'i.png', { type: 'image/png' });
       mockProductService['updateProduct'].mockReturnValue(of({}));
       mockProductService['updateProductImage'].mockReturnValue(of({}));
-      const navSpy = jest.spyOn(router, 'navigate').mockImplementation(() => Promise.resolve(true) as any);
+      const navSpy = jest
+        .spyOn(router, 'navigate')
+        .mockImplementation(() => Promise.resolve(true) as any);
 
       component.isEditMode = true;
       component.productId = '10';
@@ -260,7 +279,9 @@ describe('ProductFormComponent', () => {
   });
 
   it('loadCategories sets errorMessage on failure', () => {
-    mockCategoryService['getAllCategories'].mockReturnValue(throwError(() => new Error('cat fail')));
+    mockCategoryService['getAllCategories'].mockReturnValue(
+      throwError(() => new Error('cat fail'))
+    );
     component.loadCategories();
     expect(component.errorMessage).toContain('Error al cargar las categorías');
   });
@@ -275,7 +296,9 @@ describe('ProductFormComponent', () => {
   });
 
   it('onCancel navigates to /products', () => {
-    const navSpy = jest.spyOn(router, 'navigate').mockImplementation(() => Promise.resolve(true) as any);
+    const navSpy = jest
+      .spyOn(router, 'navigate')
+      .mockImplementation(() => Promise.resolve(true) as any);
     component.onCancel();
     expect(navSpy).toHaveBeenCalledWith(['/products']);
   });

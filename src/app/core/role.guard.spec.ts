@@ -10,19 +10,19 @@ describe('RoleGuard', () => {
 
   beforeEach(() => {
     authService = {
-      getRoles: jest.fn()
+      getRoles: jest.fn(),
     };
 
     router = {
-      navigate: jest.fn()
+      navigate: jest.fn(),
     };
 
     TestBed.configureTestingModule({
       providers: [
         RoleGuard,
         { provide: AuthService, useValue: authService },
-        { provide: Router, useValue: router }
-      ]
+        { provide: Router, useValue: router },
+      ],
     });
 
     guard = TestBed.inject(RoleGuard);
@@ -31,10 +31,10 @@ describe('RoleGuard', () => {
   it('should allow access for Admin role', () => {
     const mockRoute = {
       data: {
-        expectedRoles: ['Admin']
-      }
+        expectedRoles: ['Admin'],
+      },
     };
-    
+
     authService.getRoles.mockReturnValue(['Admin']);
     const result = guard.canActivate(mockRoute as any, null as any);
     expect(result).toBe(true);
@@ -43,10 +43,10 @@ describe('RoleGuard', () => {
   it('should allow access for Editor role', () => {
     const mockRoute = {
       data: {
-        expectedRoles: ['Editor']
-      }
+        expectedRoles: ['Editor'],
+      },
     };
-    
+
     authService.getRoles.mockReturnValue(['Editor']);
     const result = guard.canActivate(mockRoute as any, null as any);
     expect(result).toBe(true);
@@ -55,10 +55,10 @@ describe('RoleGuard', () => {
   it('should deny access for User role', () => {
     const mockRoute = {
       data: {
-        expectedRoles: ['Admin', 'Editor']
-      }
+        expectedRoles: ['Admin', 'Editor'],
+      },
     };
-    
+
     authService.getRoles.mockReturnValue(['User']);
     const result = guard.canActivate(mockRoute as any, null as any);
     expect(result).toBe(false);

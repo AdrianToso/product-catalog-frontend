@@ -12,14 +12,14 @@ module.exports = function (config) {
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
-      require('@angular-devkit/build-angular/plugins/karma')
+      require('@angular-devkit/build-angular/plugins/karma'),
     ],
     client: {
       jasmine: {},
-      clearContext: false
+      clearContext: false,
     },
     jasmineHtmlReporter: {
-      suppressAll: true
+      suppressAll: true,
     },
 
     coverageReporter: {
@@ -28,17 +28,17 @@ module.exports = function (config) {
         { type: 'html', subdir: 'report-html' },
         { type: 'text-summary' },
         { type: 'json', subdir: '.', file: 'coverage-final.json' },
-        { type: 'json-summary', subdir: '.', file: 'coverage-summary.json' }
+        { type: 'json-summary', subdir: '.', file: 'coverage-summary.json' },
       ],
       check: {
         global: {
           statements: 70,
           branches: 50,
           functions: 60,
-          lines: 70
+          lines: 70,
         },
-        emitWarning: false
-      }
+        emitWarning: false,
+      },
     },
 
     reporters: ['progress', 'kjhtml', 'coverage'],
@@ -49,6 +49,6 @@ module.exports = function (config) {
     autoWatch: true,
     browsers: ['ChromeHeadless'],
     singleRun: true,
-    restartOnFileChange: true
+    restartOnFileChange: true,
   });
 };

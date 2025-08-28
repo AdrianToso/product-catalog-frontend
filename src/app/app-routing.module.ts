@@ -10,18 +10,15 @@ const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'home' },
       {
         path: 'home',
-        loadChildren: () =>
-          import('./home/home.module').then((m) => m.HomeModule),
+        loadChildren: () => import('./home/home.module').then(m => m.HomeModule),
       },
       {
         path: 'products',
-        loadChildren: () =>
-          import('./products/products.module').then((m) => m.ProductsModule),
+        loadChildren: () => import('./products/products.module').then(m => m.ProductsModule),
       },
       {
         path: 'auth',
-        loadChildren: () =>
-          import('./auth/auth.module').then((m) => m.AuthModule),
+        loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule),
       },
     ],
   },

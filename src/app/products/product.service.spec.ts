@@ -12,7 +12,7 @@ describe('ProductService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [ProductService]
+      providers: [ProductService],
     });
     service = TestBed.inject(ProductService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -31,7 +31,7 @@ describe('ProductService', () => {
     const productData: CreateProductDto = {
       name: 'Test Product',
       description: 'Test Description',
-      categoryId: 'cat-123'
+      categoryId: 'cat-123',
     };
     const imageFile = new File([''], 'test.jpg', { type: 'image/jpeg' });
 
@@ -70,10 +70,10 @@ describe('ProductService', () => {
 
     service.getProductById(productId).subscribe({
       next: () => fail('should have failed'),
-      error: (err) => {
+      error: err => {
         expect(err).toBeTruthy();
         expect(err.message).toBe('Not Found');
-      }
+      },
     });
 
     const req = httpMock.expectOne(`${apiUrl}/${productId}`);
@@ -83,7 +83,7 @@ describe('ProductService', () => {
   it('should get products with pagination', () => {
     const mockPaginated = {
       items: [],
-      totalCount: 0
+      totalCount: 0,
     };
 
     service.getProducts(1, 10).subscribe(response => {
@@ -100,7 +100,7 @@ describe('ProductService', () => {
     const productData: CreateProductDto = {
       name: 'No Image Product',
       description: 'Description',
-      categoryId: 'cat-456'
+      categoryId: 'cat-456',
     };
 
     service.createProduct(productData).subscribe(response => {

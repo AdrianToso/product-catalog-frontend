@@ -6,13 +6,15 @@ import { AuthService } from './auth/auth.service';
   standalone: false,
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  
   isLoggedIn: WritableSignal<boolean>;
-  
-  constructor(private router: Router, private authService: AuthService) {
+
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {
     this.isLoggedIn = this.authService.isLoggedInSig;
   }
 

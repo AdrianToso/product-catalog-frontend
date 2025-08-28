@@ -20,16 +20,15 @@ export class LayoutComponent {
   userName: Signal<string | null>;
 
   constructor(
-    private authService: AuthService, 
+    private authService: AuthService,
     private router: Router,
     private breakpointObserver: BreakpointObserver
   ) {
-    this.isHandset$ = this.breakpointObserver.observe(Breakpoints.Handset)
-      .pipe(
-        map(result => result.matches),
-        shareReplay()
-      );
-      
+    this.isHandset$ = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
+      map(result => result.matches),
+      shareReplay()
+    );
+
     this.isLoggedIn = this.authService.isLoggedInSig;
     this.userName = this.authService.userSig;
   }

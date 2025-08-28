@@ -25,12 +25,15 @@ describe('LayoutComponent', () => {
     mockAuthService = {
       isLoggedInSig,
       userSig,
-      logout: jest.fn()
+      logout: jest.fn(),
     };
 
-    const breakpointSubject = new BehaviorSubject<BreakpointState>({ matches: true, breakpoints: {} });
+    const breakpointSubject = new BehaviorSubject<BreakpointState>({
+      matches: true,
+      breakpoints: {},
+    });
     mockBreakpointObserver = {
-      observe: jest.fn(() => breakpointSubject.asObservable())
+      observe: jest.fn(() => breakpointSubject.asObservable()),
     };
 
     await TestBed.configureTestingModule({
@@ -41,12 +44,12 @@ describe('LayoutComponent', () => {
         MatListModule,
         MatIconModule,
         RouterTestingModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
       ],
       providers: [
         { provide: AuthService, useValue: mockAuthService },
-        { provide: BreakpointObserver, useValue: mockBreakpointObserver }
-      ]
+        { provide: BreakpointObserver, useValue: mockBreakpointObserver },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LayoutComponent);
@@ -71,11 +74,10 @@ describe('LayoutComponent', () => {
     expect(component.snav.close).toHaveBeenCalled();
   }));
 
-it('should not throw if sidenav is undefined', fakeAsync(() => {
-  component.snav = { close: jest.fn() } as unknown as MatSidenav;
-  expect(() => component.closeSidenavIfNeeded()).not.toThrow();
-  tick();
-  expect(component.snav.close).toHaveBeenCalled();
-}));
-
+  it('should not throw if sidenav is undefined', fakeAsync(() => {
+    component.snav = { close: jest.fn() } as unknown as MatSidenav;
+    expect(() => component.closeSidenavIfNeeded()).not.toThrow();
+    tick();
+    expect(component.snav.close).toHaveBeenCalled();
+  }));
 });

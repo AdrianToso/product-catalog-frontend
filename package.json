@@ -11,7 +11,10 @@
     "test:coverage": "jest --config jest.config.cjs --coverage",
     "test:ci": "jest --config jest.config.cjs --ci --runInBand",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "prettier:check": "prettier --check .",
+    "prettier:fix": "prettier --write .",
+    "validate": "npm run lint && npm run test:ci && npm run prettier:check"
   },
   "private": true,
   "dependencies": {
@@ -46,6 +49,7 @@
     "jest-preset-angular": "^14.6.0",
     "open": "^9.1.0",
     "open-cli": "^8.0.0",
+    "prettier": "^3.6.2",
     "sass": "^1.90.0",
     "typescript": "~5.9.2"
   },

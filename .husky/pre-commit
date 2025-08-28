@@ -1,15 +1,15 @@
 #!/bin/sh
 
 # Ejecutar ESLint
-echo "Running ESLint..."
+echo "🔍 Ejecutando ESLint..."
 npm run lint
 if [ $? -ne 0 ]; then
-    echo "ESLint failed. Please fix the issues before committing."
+    echo "❌ ESLint falló. Por favor corrige los problemas antes del commit."
     exit 1
 fi
 
 # Ejecutar pruebas con cobertura en formato JSON summary
-echo "Running tests with coverage..."
+echo "🧪 Ejecutando pruebas con cobertura..."
 npx jest --config jest.config.cjs --coverage --coverageReporters=json-summary
 
 # Verificar cobertura mínima usando Node.js para procesar el JSON summary
@@ -37,13 +37,13 @@ let failed = false;
 for (const [key, threshold] of Object.entries(thresholds)) {
   const coverageValue = totals[key]?.pct;
   if (coverageValue === undefined) {
-    console.error(\`Could not find coverage data for \${key}\`);
+    console.error(\`❌ No se encontraron datos de cobertura para \${key}\`);
     failed = true;
   } else if (coverageValue < threshold) {
-    console.error(\`\${key} coverage is below threshold: \${coverageValue}% < \${threshold}%\`);
+    console.error(\`❌ Cobertura de \${key} está por debajo del mínimo: \${coverageValue}% < \${threshold}%\`);
     failed = true;
   } else {
-    console.log(\`\${key} coverage: \${coverageValue}% >= \${threshold}%\`);
+    console.log(\`✅ Cobertura de \${key}: \${coverageValue}% >= \${threshold}%\`);
   }
 }
 
@@ -51,8 +51,16 @@ process.exit(failed ? 1 : 0);
 "
 
 if [ $? -ne 0 ]; then
-    echo "Coverage check failed. Please improve test coverage before committing."
+    echo "❌ Verificación de cobertura falló. Por favor mejora la cobertura de pruebas antes del commit."
     exit 1
 fi
 
-echo "All checks passed! Committing..."
+# Verificar formateo con Prettier (nueva adición)
+echo "💅 Ejecutando verificación de Prettier..."
+npm run prettier:check
+if [ $? -ne 0 ]; then
+    echo "❌ Verificación de Prettier falló. Ejecuta 'npm run prettier:fix' para formatear tu código."
+    exit 1
+fi
+
+echo "✅ ¡Todas las verificaciones pasaron! Procediendo con el commit..."

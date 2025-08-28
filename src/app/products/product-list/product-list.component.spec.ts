@@ -24,25 +24,26 @@ describe('ProductListComponent', () => {
         MatCardModule,
         MatIconModule,
         RouterTestingModule,
-        HttpClientTestingModule
+        HttpClientTestingModule,
       ],
       providers: [
-        { 
-          provide: AuthService, 
-          useValue: { 
-            roleSig: () => ['Admin'],
-            isLoggedInSig: () => true
-          } 
-        },
-        { 
-          provide: ProductService, 
+        {
+          provide: AuthService,
           useValue: {
-            getProducts: () => of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 1 }),
-            deleteProduct: () => of({})
-          }
+            roleSig: () => ['Admin'],
+            isLoggedInSig: () => true,
+          },
         },
-        { 
-          provide: ProductsStateService, 
+        {
+          provide: ProductService,
+          useValue: {
+            getProducts: () =>
+              of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 1 }),
+            deleteProduct: () => of({}),
+          },
+        },
+        {
+          provide: ProductsStateService,
           useValue: {
             products$: of([]),
             loading$: of(false),
@@ -51,10 +52,10 @@ describe('ProductListComponent', () => {
             setProducts: jest.fn(),
             setLoading: jest.fn(),
             setError: jest.fn(),
-            setPagination: jest.fn()
-          }
-        }
-      ]
+            setPagination: jest.fn(),
+          },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProductListComponent);
@@ -128,16 +129,18 @@ describe('ProductListComponent', () => {
   it('should call quickPurchase when onPurchase is called', () => {
     const dialogRefSpy = { afterClosed: () => of({ quantity: 2 }) };
     jest.spyOn(component['dialog'], 'open').mockReturnValue(dialogRefSpy as any);
-    const spyQuickPurchase = jest.spyOn(component['purchaseService'], 'quickPurchase').mockReturnValue(of({ success: true, message: 'ok' }));
+    const spyQuickPurchase = jest
+      .spyOn(component['purchaseService'], 'quickPurchase')
+      .mockReturnValue(of({ success: true, message: 'ok' }));
 
     component.onPurchase({ id: '1', name: 'Product' } as any);
     expect(spyQuickPurchase).toHaveBeenCalledWith('1', 2);
   });
 
   it('should handle processPurchase error', () => {
-    const spyQuickPurchase = jest.spyOn(component['purchaseService'], 'quickPurchase').mockReturnValue(
-      of({ success: false, message: 'fail' })
-    );
+    const spyQuickPurchase = jest
+      .spyOn(component['purchaseService'], 'quickPurchase')
+      .mockReturnValue(of({ success: false, message: 'fail' }));
 
     const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
     component['processPurchase']('1', 1);
@@ -145,5 +148,4 @@ describe('ProductListComponent', () => {
     expect(spyQuickPurchase).toHaveBeenCalledWith('1', 1);
     expect(alertSpy).toHaveBeenCalledWith('Error: fail');
   });
-
 });

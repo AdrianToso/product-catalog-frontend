@@ -7,24 +7,19 @@ import { AuthService } from './auth/auth.service';
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        RouterModule.forRoot([]),
-        HttpClientTestingModule
-      ],
-      declarations: [
-        AppComponent
-      ],
+      imports: [RouterModule.forRoot([]), HttpClientTestingModule],
+      declarations: [AppComponent],
       providers: [
-        { 
-          provide: AuthService, 
-          useValue: { 
+        {
+          provide: AuthService,
+          useValue: {
             isLoggedInSig: () => false,
             roleSig: () => null,
             userSig: () => null,
-            logout: () => {}
-          } 
-        }
-      ]
+            logout: () => {},
+          },
+        },
+      ],
     }).compileComponents();
   });
 

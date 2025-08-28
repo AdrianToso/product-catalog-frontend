@@ -10,7 +10,8 @@ describe('AuthService', () => {
 
   // Crear un token JWT de prueba con payload decodificable
   // Payload: { "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name": "admin", "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": ["Editor", "User", "Admin"], ... }
-  const fakeJwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiRWRpdG9yIiwgIlVzZXIiLCAiQWRtaW4iXSwiZXhwIjoxNzM1Njg5NjYxLCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo3MTc1IiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDIwMCJ9.fakeSignature';
+  const fakeJwt =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiRWRpdG9yIiwgIlVzZXIiLCAiQWRtaW4iXSwiZXhwIjoxNzM1Njg5NjYxLCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo3MTc1IiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDIwMCJ9.fakeSignature';
 
   beforeAll(() => {
     // Polyfill para atob en el entorno de prueba de Node.js (Karma)
@@ -22,11 +23,11 @@ describe('AuthService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [AuthService]
+      providers: [AuthService],
     });
     service = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);
-    
+
     // Limpiar localStorage antes de cada prueba
     localStorage.clear();
     service.isLoggedInSig.set(false);
@@ -46,7 +47,7 @@ describe('AuthService', () => {
     it('should perform a POST request and store user data on successful login', () => {
       const mockResponse = {
         token: fakeJwt,
-        expiresAt: new Date().toISOString()
+        expiresAt: new Date().toISOString(),
       };
 
       service.login('admin', 'password').subscribe();
@@ -58,7 +59,7 @@ describe('AuthService', () => {
       expect(localStorage.getItem('token')).toBe(mockResponse.token);
       expect(localStorage.getItem('roles')).toBe(JSON.stringify(['Editor', 'User', 'Admin']));
       expect(localStorage.getItem('userName')).toBe('admin');
-      
+
       expect(service.isLoggedInSig()).toBe(true);
       expect(service.roleSig()).toEqual(['Editor', 'User', 'Admin']);
       expect(service.userSig()).toBe('admin');
@@ -68,10 +69,10 @@ describe('AuthService', () => {
       const errorResponse = { status: 400, statusText: 'Bad Request' };
 
       service.login('wrong', 'user').subscribe({
-        error: (err) => {
+        error: err => {
           expect(err).toBeTruthy();
           expect(err.message).toBe('Usuario o contraseña incorrectos.');
-        }
+        },
       });
 
       const req = httpMock.expectOne(`${apiUrl}/login`);

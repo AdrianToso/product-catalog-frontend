@@ -7,7 +7,9 @@ import { Router } from '@angular/router';
 
 // Mocks
 class MockAuthService {
-  getToken(): string | null { return 'test-token'; }
+  getToken(): string | null {
+    return 'test-token';
+  }
   logout = jest.fn();
 }
 
@@ -28,11 +30,11 @@ describe('AuthInterceptor', () => {
         {
           provide: HTTP_INTERCEPTORS,
           useClass: AuthInterceptor,
-          multi: true
+          multi: true,
         },
         { provide: AuthService, useClass: MockAuthService },
-        { provide: Router, useClass: MockRouter }
-      ]
+        { provide: Router, useClass: MockRouter },
+      ],
     });
 
     httpMock = TestBed.inject(HttpTestingController);
@@ -68,7 +70,7 @@ describe('AuthInterceptor', () => {
 
   it('should logout and redirect on 401 error', () => {
     httpClient.get('/test').subscribe({
-      error: () => {} // evitar error en subscribe
+      error: () => {}, // evitar error en subscribe
     });
 
     const req = httpMock.expectOne('/test');
@@ -81,7 +83,7 @@ describe('AuthInterceptor', () => {
   it('should throw error for non-401 errors', () => {
     let caughtError: any;
     httpClient.get('/test').subscribe({
-      error: (err) => caughtError = err
+      error: err => (caughtError = err),
     });
 
     const req = httpMock.expectOne('/test');

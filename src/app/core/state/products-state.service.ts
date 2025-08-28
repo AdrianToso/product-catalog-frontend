@@ -1,20 +1,24 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs'; 
+import { BehaviorSubject } from 'rxjs';
 import { Product } from '../../products/models/product.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductsStateService {
   private productsSubject = new BehaviorSubject<Product[]>([]);
   private loadingSubject = new BehaviorSubject<boolean>(false);
   private errorSubject = new BehaviorSubject<string | null>(null);
-  private paginationSubject = new BehaviorSubject<{page: number, pageSize: number, totalCount: number}>({
+  private paginationSubject = new BehaviorSubject<{
+    page: number;
+    pageSize: number;
+    totalCount: number;
+  }>({
     page: 1,
     pageSize: 10,
-    totalCount: 0
+    totalCount: 0,
   });
-  
+
   products$ = this.productsSubject.asObservable();
   loading$ = this.loadingSubject.asObservable();
   error$ = this.errorSubject.asObservable();
@@ -45,7 +49,7 @@ export class ProductsStateService {
   updateProduct(updatedProduct: Product): void {
     const currentProducts = this.productsSubject.value;
     const index = currentProducts.findIndex(p => p.id === updatedProduct.id);
-    
+
     if (index !== -1) {
       const newProducts = [...currentProducts];
       newProducts[index] = updatedProduct;

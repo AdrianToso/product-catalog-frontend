@@ -11,9 +11,7 @@ import { ProductFormDialogComponent } from './product-form-dialog/product-form-d
 import { PurchaseDialogComponent } from './purchase-dialog/purchase-dialog.component';
 import { ProductFormComponent } from './product-form/product-form.component';
 
-const routes: Routes = [
-  { path: '', component: ProductListComponent },
-];
+const routes: Routes = [{ path: '', component: ProductListComponent }];
 
 @NgModule({
   declarations: [
@@ -21,7 +19,7 @@ const routes: Routes = [
     ConfirmDialogComponent,
     ProductFormDialogComponent,
     PurchaseDialogComponent,
-    ProductFormComponent
+    ProductFormComponent,
   ],
   imports: [
     CommonModule,

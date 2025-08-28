@@ -10,7 +10,7 @@ describe('PurchaseDialogComponent', () => {
 
   // MatDialogRef mock (Jest)
   const mockDialogRef = {
-    close: jest.fn()
+    close: jest.fn(),
   } as unknown as MatDialogRef<PurchaseDialogComponent>;
 
   // Mock product con campos mínimos para que coincida con Product (incluye description y category)
@@ -19,7 +19,7 @@ describe('PurchaseDialogComponent', () => {
     name: 'Test Product',
     description: 'Test description',
     category: { id: '1', name: 'Test Category', description: 'cat desc' },
-    price: 10 // si tu interfaz no tiene price no hace daño; TS lo ignora si casteado
+    price: 10, // si tu interfaz no tiene price no hace daño; TS lo ignora si casteado
   } as unknown;
 
   beforeEach(async () => {
@@ -28,8 +28,8 @@ describe('PurchaseDialogComponent', () => {
       imports: [ReactiveFormsModule, NoopAnimationsModule],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: { product: mockProduct } }
-      ]
+        { provide: MAT_DIALOG_DATA, useValue: { product: mockProduct } },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PurchaseDialogComponent);

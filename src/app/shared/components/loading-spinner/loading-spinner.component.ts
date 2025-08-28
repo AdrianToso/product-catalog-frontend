@@ -5,7 +5,7 @@ import { LoadingService } from '../../../core/services/loading.service';
   standalone: false,
   selector: 'app-loading-spinner',
   templateUrl: './loading-spinner.component.html',
-  styleUrls: ['./loading-spinner.component.scss']
+  styleUrls: ['./loading-spinner.component.scss'],
 })
 export class LoadingSpinnerComponent {
   constructor(public loadingService: LoadingService) {}
