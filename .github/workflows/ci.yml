@@ -83,8 +83,19 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Escanear imagen de Docker
-        run: docker scan product-catalog-frontend:latest
+      # Escaneo de seguridad con Trivy (alternativa a docker scan)
+      - name: Escanear imagen de Docker con Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'product-catalog-frontend:latest'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Subir resultados de escaneo a GitHub
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
 
       - name: Construcción completada ✅
         run: echo "Imagen de Docker construida y escaneada exitosamente"
