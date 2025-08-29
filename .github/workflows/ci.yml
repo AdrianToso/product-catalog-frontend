@@ -75,10 +75,28 @@ jobs:
       - name: Obtener código del repositorio
         uses: actions/checkout@v4
 
+      # --- Comienza el escaneo proactivo del Dockerfile con Trivy
+      - name: Escanear el Dockerfile y configuraciones con Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs' # Escanea el sistema de archivos del repositorio
+          format: 'sarif'
+          output: 'trivy-fs-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+
+      - name: Subir resultados de escaneo del Dockerfile a GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-fs-results.sarif'
+      # --- Finaliza el escaneo proactivo del Dockerfile con Trivy
+
       - name: Configurar Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Construir imagen de Docker
+      - name: Construir y escanear imagen de Docker
         uses: docker/build-push-action@v4
         with:
           context: .
@@ -88,26 +106,21 @@ jobs:
           load: true
           push: false
 
-      - name: Verificar imagen construida
-        run: docker images
-
-      # Escaneo de seguridad con Trivy - Versión corregida
       - name: Escanear imagen de Docker con Trivy
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'product-catalog-frontend:latest' # Usar el nombre de la imagen directamente
+          image-ref: 'product-catalog-frontend:latest'
           format: 'sarif'
-          output: 'trivy-results.sarif'
+          output: 'trivy-image-results.sarif'
           severity: 'CRITICAL,HIGH'
-          # Agregar estas opciones para mejorar la compatibilidad
           ignore-unfixed: true
           vuln-type: 'os,library'
 
-      - name: Subir resultados de escaneo a GitHub
+      - name: Subir resultados de escaneo de la imagen a GitHub
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: 'trivy-image-results.sarif'
 
       - name: Construcción completada ✅
         run: echo "Imagen de Docker construida y escaneada exitosamente"
