@@ -83,6 +83,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+
       # Escaneo de seguridad con Trivy (alternativa a docker scan)
       - name: Escanear imagen de Docker con Trivy
         uses: aquasecurity/trivy-action@master
