@@ -85,26 +85,26 @@ jobs:
           tags: product-catalog-frontend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          load: true # Esto hace que la imagen esté disponible localmente
-          push: false # No hacer push al registry
+          load: true
+          push: false
 
       - name: Verificar imagen construida
         run: docker images
 
-      # Escaneo de seguridad con Trivy (usando el archivo tar)
       - name: Guardar imagen en tar
         run: docker save product-catalog-frontend:latest -o image.tar
 
       - name: Escanear imagen de Docker con Trivy
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'image.tar' # Usar el archivo tar en lugar del nombre
+          image-ref: 'image.tar'
           format: 'sarif'
           output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH' # Solo reportar vulnerabilidades críticas y altas
+          severity: 'CRITICAL,HIGH'
 
       - name: Subir resultados de escaneo a GitHub
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
         with:
           sarif_file: 'trivy-results.sarif'
 
