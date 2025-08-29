@@ -79,7 +79,7 @@ jobs:
       - name: Escanear el Dockerfile y configuraciones con Trivy
         uses: aquasecurity/trivy-action@master
         with:
-          scan-type: 'fs' # Escanea el sistema de archivos del repositorio
+          scan-type: 'fs'
           format: 'sarif'
           output: 'trivy-fs-results.sarif'
           severity: 'CRITICAL,HIGH'
