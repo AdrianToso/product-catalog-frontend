@@ -67,6 +67,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [verificaciones-calidad, escaneo-seguridad]
     if: github.ref == 'refs/heads/master'
+    permissions:
+      security-events: write
 
     steps:
       - name: Obtener código del repositorio
@@ -83,7 +85,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # Escaneo de seguridad con Trivy (alternativa a docker scan)
       - name: Escanear imagen de Docker con Trivy
         uses: aquasecurity/trivy-action@master
         with:
@@ -92,7 +93,7 @@ jobs:
           output: 'trivy-results.sarif'
 
       - name: Subir resultados de escaneo a GitHub
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
